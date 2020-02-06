@@ -1,0 +1,947 @@
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+\documentclass[12pt]{article}
+
+\usepackage[a4paper, total={16cm, 24cm}]{geometry}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{0.25cm}
+
+\usepackage{setspace}
+%\singlespacing
+\onehalfspacing
+%\doublespacing
+
+\usepackage{threeparttable}
+
+\usepackage[small]{titlesec}
+
+% Standard Maths Packages
+\usepackage{amsthm, amsmath, amssymb}
+
+% include a graphicx packge
+\usepackage{graphicx}
+
+% for table formating
+\usepackage{booktabs}
+
+% set up biblatex and package
+\usepackage[style=apa, doi=false, isbn=false, url=false,  sorting=nyt, backend=biber, maxbibnames=99]{biblatex}
+% suppresses annoying In: from bibliography
+\renewbibmacro{in:}{}
+
+\addbibresource{ThesisResearch.bib}
+
+% set up a simple heading command
+\newcommand{\heading}[1] {\begin{center} \textbf{#1} \end{center}}
+
+
+% this is the second draft as first draft went to Garry on 9 April 2018
+\begin{document}
+
+\begin{titlepage}
+    \begin{center}
+        \vspace*{2cm}
+
+        \huge
+        Impact of Housing Costs on \\Household Formation in Australia
+        \vspace{2cm}
+
+        \large
+        Robert Daly\\
+        \vspace{1cm}
+        June 2018 \\
+
+        \vspace{1cm}
+
+        School of Economics\\
+        University of Sydney\\
+
+        \vspace{1cm}
+        Thesis submitted in partial fulfilment of the award course requirements \\
+        of the Master of Economic Analysis
+
+        \vspace{1cm}
+        Supervised by  Garry Barrett
+
+        \normalsize
+
+    \end{center}
+\end{titlepage}
+
+\pagebreak
+\heading{Statement of Originality}
+I hereby declare that this submission is my own work and to the best of my knowledge it contains no material previously published or written by another person.  Nor does it contain any material which has been accepted for the award of any other degree or diploma at the University of Sydney or at any other educational institution, except where due acknowledgment is made in this thesis.
+
+Any contributions made to the research by others with whom I have had the benefit of working at the University of Sydney is explicitly acknowledged.
+
+I also declare that the intellectual content of this study is the product of my own work and research, except to the extent that assistance from others in the project’s conception and design is acknowledged.
+
+\vspace{2.0cm}
+
+Robert Daly\\
+8 June 2018
+
+\pagebreak
+\heading{Acknowledgments}
+I acknowledge the guidance and advice provided by my supervisor Professor Garry Barrett.
+
+This paper uses unit record data from the Household, Income and Labour Dynamics in Australia (HILDA) Survey. The HILDA Project was initiated and is funded by the Australian Government Department of Social Services (DSS), and is managed by the Melbourne Institute of Applied Economic and Social Research (Melbourne Institute). The findings and views reported in this paper, however, are those of the author and should not be attributed to either DSS or the Melbourne Institute.
+
+This paper uses housing price data (referred to as RP Data) supplied by Securities Industry Research Centre of Asia-Pacific (SIRCA) on behalf of Core Logic.
+
+This paper uses economic and demographic data provided by the Australian Bureau of Statistics and the Reserve Bank of Australia.
+
+\pagebreak
+
+\begin{abstract}
+Household formation is a key life stage when young people leave home to live independently from their parents. This paper examines the impact of increased housing costs in Australia on the timing of household formation using a proportional hazards Cox regression. The elasticity of household formation with respect to house prices is close to -1.3 suggesting that a 10\% increase in real house prices would increase the average age of household formation by seven months. The result is robust when alternative measures of housing costs and model specifications are considered. The paper also considers the impact of other life stage decisions (such as partnering and finishing education) that may be jointly determined with leaving home.
+
+\heading{Keywords}
+House prices, household formation, leaving home, mortgage costs, rental costs
+\end{abstract}
+
+\section{Housing Costs and Leaving Home}
+Part of growing up is achieving economic independence from your parents. For many young people, this means leaving the family home and forming a new household on their own, with a partner or with friends. The research question here is how the average age of this household formation responds to economic factors, in particular, housing costs.
+
+Does it matter if the average age of leaving home has increased?  If young people choose freely to stay at home for mutual support between themselves and their parents, this could be beneficial to overall social welfare. However, if the costs of forming a new household have increased and this delays an important stage of an individual's life cycle then the delay is likely to reduce both individual and social welfare. In decision theory, this is an example of a more tightly binding budget constraint reducing the opportunity set and, in turn, leading to a restricted choice set and reduced welfare.
+
+If government policy could lessen this constraint by reducing housing costs then the welfare of young people (and probably their parents) would be improved. This could be done by reviewing taxation policy in the housing market or by providing more affordable social housing.
+
+Research shows that prior to the 1950s, household formation in Australia was driven by the decision to get married, sometimes accelerated due to pregnancy \parencite{weston2001australian}. By the 1970s, more young people were leaving home to live independently before getting married at a later time, resulting in earlier household formation. Since the 1980s, this has reversed coinciding with an increase in further education and the inclusion of parental income in determining eligibility for income support payments. This research shows that the factors that influence household formation have changed significantly over time.
+
+In 1994, research based on the 1985 Australian Longitudinal Survey considered the propensity of household formation and subsequent tenure choice for young Australians  \parencite{bourassa1994independent}. The research found that the removal of subsidies for first time home buyers delayed household formation. The methods used in this paper are informative, although social and economic changes in Australia since then make the results less relevant as does the limited data that was available (only one year).
+
+\cite{cobb2008leaving} presented a survey of Australian and international research on the determinants of household formation. This review shows that housing costs is one of several inputs into the household formation decision. The author suggests that data from the Household, Income and Labour Dynamics in Australia (HILDA) Survey could be used to track household decisions made over time.
+
+There has been recent research in the US \parencite{lee2013happens} and Ireland \parencite{byrne2014household} on the impact of economic activity and the housing market on household formation and the related decision of tenure choice. The US research concludes that economic factors are the primary driver. The analysis considers the impact of rents and house prices at the state level. Changes in house prices appear to have little impact on household formation (they do impact tenure choice) while changes in gross rents did. The decision to own may also depend on availability of credit and interest rates which the authors did not consider. The main drivers of household formation are employment status and economic conditions, followed by individual and family characteristics such as age, gender, education level (own and father's), race, parental income and family size. The authors did a simulation of the impact of the recent recession and concluded that the economic factors are more significant than the fall in rents and house prices.
+
+The Irish research uses the significant downturn in the Irish housing market in 2008 as a natural experiment to estimate the impact of such changes on household formation. They note that rental costs are likely to have more impact as most new households in Ireland rent rather than buy. They also consider the user costs of owner occupied housing based on mortgage costs, depreciation and expected capital gains or losses, all adjusted for tax \parencite{duffy2013ESRI}. Expected capital gains are based on the average price movements over the previous four years \parencite{browne2013understanding}. Rental costs remained fairly level over the period of analysis while the user cost of housing increased considerably in 2008, from a negative value in prior years to a positive value. Their results showed a significant negative relation between rental costs and household formation which aligns to the intuition that lower costs encourage more household formation.
+
+The contribution of this paper is to use contemporary, rich data along with a flexible modelling approach to analyse the relationship between leaving home and housing costs. A better understanding of these impacts will inform social housing and taxation policy in Australia.
+
+The decision to leave home is modelled to occur when the utility of living independently exceeds the utility of staying at home plus any costs of moving.  The utility of living independently would consider the benefits of greater freedom of choice without parental oversight, the ability to partner and to have children but also the additional costs of independent living.  The utility of staying at home would consider the emotional and other support from family members, the desire to care for other family members and the savings from sharing living costs. An increase in housing costs would delay the point at which the utility of living independently exceeds that of living at home.
+
+Ideally, a model for the household formation decision would take account of all significant elements of the two utility calculations. The main data for this study is the HILDA survey that provides a rich set of such variables to consider \parencite{HILDA2017Manual}. In addition, HILDA provides data on own estimates of house prices, mortgage costs and rental costs. RP Data is also used to provide an alternative, more objective measure of house prices based on actual transactions that could address issues with self-reported valuations. RP Data also provides information on rental listings; however this information is less useful as discussed later.
+
+As the Australian housing market has a high level of owner occupied housing and short-term tenancy agreements, the impact of housing costs may differ significantly in Australia compared to other developed countries. The different research findings in the US and Ireland show that such differences likely exist. Hence, it is important to understand the determinants of household formation in an Australian context.
+
+\section{Data Sources}
+
+The HILDA Survey is used to measure the rate of household formation, to create an index of estimated house prices, rental costs and mortgage costs and to measure other social and demographic variables that influence the decision to living independently from your parents. HILDA is a large panel data set with an extensive set of questions that captures many decisions by households and individuals. As a panel, it provides a robust basis for dealing with endogeneity and unobserved heterogeneity. HILDA released its 16th annual wave in December 2017 with this wave covering 9,750 households and 23,496 individuals \parencite{HILDA2017Manual}. The initial wave of the survey was 7,682 households in 2001. By 2012, the number of households was 7,390 allowing for some households no longer responding but with new households being formed. In 2012, there was a top-up intake of 2,153 new households. As such, HILDA provides a robust and extensive set of data points on which to base the analysis of household formation.
+
+For the analysis in this paper, the HILDA data is supplemented by housing prices and rental listings provided by SIRCA on behalf of Core Logic (referred to as RP Data). This data correlated closely with the data obtained from HILDA. Australian Bureau of Statistics (ABS) reports are used to provide data on state unemployment, state income growth and consumer price inflation(CPI). The Reserve Bank of Australia (RBA) provided data on bank mortgage interest rates.
+
+The ABS Survey of Income and Housing (SIH) was considered as an alternative data set. This survey includes many relevant co-variates and commenced in 1994 prior to HILDA. In 2015-16, the survey included 17,768 households. The survey had different frequency over time (most recently every two years) and uses an independent sample of households each year. The SIH independent cross sections do not allow household formation to be determined as a change in status over time, as the same individuals are not tracked from sample to sample. In addition, the larger gaps between surveys would mean that the rate of formation is measured less often. The advantages of panel data with respect to controlling for endogeneity and unobserved heterogeneity are not available with independent cross sections. Although SIH covered more households and has similar coverage of variables, HILDA is favoured due to its panel data format and its greater frequency (annual since 2001).
+
+HILDA has been used before to consider household formation. The HILDA wave 1 data included a recall question that asked ``How old were you when you first moved out of home as a young person?''. The answers to this question were analysed to provide a record of historical average ages on household formation \parencite{flatau2007leaving} and links this to age of first partnering. Other than this research, HILDA data does not appear to have been used to analyse household formation decisions.
+
+\subsection{HILDA Variables}
+
+The HILDA dataset provides most of the co-variates that are identified by previous research \parencites{lee2013happens, byrne2014household} and has the advantage of a longitudinal structure which provides additional ways to deal with endogeneity and omitted variables. Table \ref{HILDAvar} sets out the variables used by these researchers that could be obtained from HILDA.
+
+\begin{table}[htpb]
+\centering
+\caption{Variables from Other Research}
+\label{HILDAvar}
+\tabularnewline
+\begin{tabular}{lcc}
+\toprule
+Variable & Byrne et al. & Lee \& Painter  \\
+& 2014 & 2013  \\
+\midrule
+Gender & Included & Included \\
+Education level & Included & Included \\
+Labour status & Included & Included \\
+Marital status & Included & -- \\
+Have children & Included & -- \\
+Own health & -- & Included \\
+Nationality & Included & -- \\
+Years resident & Included & -- \\
+Region living in  & Included & Included \\
+Disposable income & Included & -- \\
+Cost of rent & Included & -- \\
+Family structure & -- & Included \\
+Family income & -- & Included \\
+Family tenure & -- & Included \\
+Father's education & -- & Included \\
+Parent's health & -- & Included \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The HILDA survey provided data for all the relevant variables used by \cite{byrne2014household}. For the US study, \cite{lee2013happens} also included US state based measures such as growth rate, unemployment rate, average real wage, median gross rent and median house value. These are also included in this study by Australian state with the data obtained from different sources, these being the ABS, RP Data and HILDA. The US study also included year of recession which is not used in this study, noting that Australia did not have a recession in the period 2001 to 2016. The US study also included city size and race, neither of which are included in this study.
+
+\subsection{Leaving Home}
+The HILDA survey provides a range of variables that can be used to define when a young person first leaves home. First, an entry point and exit point is determined for each individual. These points define the boundaries of the risk set being the set of all those individuals living with their parents who are ``at risk'' of living independently from their parents. This risk set is used to calculate hazard rates, being the ``hazard'' of leaving home. A hazard rate is the probability of exit from economic dependence on one's parents to form one's own household as a function of the time spent dependent. The hazard rate may be estimated as the count of event exits at a given age as a ratio of the size of the risk set for that age.
+
+The entry point to the risk set is when someone is first exposed to the risk of leaving home. This is defined as when the individual first has a household status of either ``Dependent student'' or ``Non-dependent child'' and the individual is aged between 15 and 25. The entry point for most individuals will be age 15, which is when they first become eligible to be interviewed for HILDA. However, some individuals enter the survey at older ages either through entry in the first wave, the top-up wave (wave 11) or through joining an enumerated household. These are treated as left truncated (or censored) individuals in the hazard rate modelling (see Section 3 for details of the estimation). As the study is focusing on when young people first leave home, these older age entries are restricted to individuals aged 25 or under who are enumerated as children in the household. For example, an individual with children who moves in with a parent would be excluded from entry as they are not enumerated as a child even if living with their parents. If they are single, aged under 24 and not previously in the risk set, they would be included as an entry into the risk set.
+
+An exit event is not defined as simply leaving the status of ``Dependent student'' or ``Non-dependent child'', as some individuals remain in the family home after having a child or, in some cases, their partner moves in. Instead, an exit event is defined as living apart from their parents in the following period. This approach assumes that those who have children or get married and stay at home remain dependent on their parents. This may not be the case (for instance getting married and staying at home to look after a sick parent); however there is no way of knowing the particular circumstances and this is a pragmatic approach.
+
+In some cases, an event exit could not be checked directly as the individual was not enumerated in the following period. Instead, the check is whether the parent that they had been living with was enumerated, in which case they must have moved out, as anyone living in an enumerated household is enumerated (even if not interviewed).
+
+Not every exit occurred with an event as some individuals' households simply left the survey and no individuals are tracked after wave 16. These cases are treated as right censored in the hazard model.
+
+This process is summarised in Table \ref{HILDAsum}, which shows the number of households in each wave, the number of individuals in each wave, the size of the risk set of individuals (last wave not included as exits are not identifiable for this wave), the number of exits and the resulting exit rate.
+
+\begin{table}[htpb]
+\centering
+\caption{Summary of HILDA Data and Exit Rate}
+\label{HILDAsum}
+\begin{tabular}{ccrrrrr}
+\toprule
+Wave & Year & Households & Individuals & Risk Set & Exits & Exit Rate \\
+\midrule
+a & 2001 & 7,682 & 19,914 & 1,452 & 243 & 16.7\% \\
+  b & 2002 & 7,246 & 21,045 & 1,409 & 232 & 16.5\% \\
+  c & 2003 & 7,097 & 22,062 & 1,375 & 231 & 16.8\% \\
+  d & 2004 & 6,988 & 22,958 & 1,390 & 230 & 16.5\% \\
+  e & 2005 & 7,126 & 23,902 & 1,396 & 217 & 15.5\% \\
+  f & 2006 & 7,140 & 24,851 & 1,471 & 204 & 13.9\% \\
+  g & 2007 & 7,064 & 25,701 & 1,464 & 223 & 15.2\% \\
+  h & 2008 & 7,067 & 26,522 & 1,495 & 210 & 14.0\% \\
+  i & 2009 & 7,235 & 27,519 & 1,570 & 211 & 13.4\% \\
+  j & 2010 & 7,318 & 28,529 & 1,595 & 218 & 13.7\% \\
+  k & 2011 & 9,544 & 34,950 & 2,040 & 295 & 14.5\% \\
+  l & 2012 & 9,538 & 36,140 & 2,027 & 277 & 13.7\% \\
+  m & 2013 & 9,556 & 37,428 & 2,023 & 273 & 13.5\% \\
+  n & 2014 & 9,539 & 38,511 & 2,023 & 270 & 13.3\% \\
+  o & 2015 & 9,632 & 39,630 & 1,992 & 279 & 14.0\% \\
+  p & 2016 & 9,751 & 40,746 &  &  &  \\
+\bottomrule
+\end{tabular}
+
+\end{table}
+
+\subsection{Age of Leaving Home}
+
+The HILDA survey records the age last birthday on 30 June in the year of interview and the year of birth. These two data items can be combined to estimate age at date of interview to the nearest half year for the hazard rate modelling.
+
+Interviews occur in the latter half of the calendar year with an average interview timing of 21 September. Hence, the age at interview is approximately 0.75 years older than the recorded age (noting the actual age at 30 June is approximately 0.5 years older than the recorded age last birthday). A more precise calculation to the nearest half year is made by allowing for the year of birth but the details are omitted here.
+
+Actual exits occur in the year between interview dates and are assumed to occur midway. Hence, the age at exit is approximately 1.25 years older than the age recorded. This gives an average age on exit of 21.25 years based on the individuals in the survey (`survey average').
+
+Using this logic to calculate age, hazard rates are calculated for each age group. A hazard rate is estimated as the ratio of the number of event exits at a given age to the size of the risk set for that age. The resulting raw hazards rates are shown in Figure \ref{ExitbyAge} and a survival curve is shown in Figure \ref{StaybyAge}.
+
+\begin{figure}[htpb]
+  \caption{Leaving Home Hazard Rates by Age}
+  \label{ExitbyAge}
+  \centering
+  \includegraphics[width=0.8\textwidth]{RawHazard.pdf}
+\end{figure}
+
+The exit rate follows a hump backed shape with exits increasing to age 27 and then decreasing overall for later ages. There are fewer individuals at these older ages which makes the estimates less precise. The fitting process produces a smooth survival curve (or survivorship function). Relatively few lives continue to be at home at age 30.
+
+\begin{figure}[htpb]
+  \caption{Staying at Home Survival Function}
+  \label{StaybyAge}
+  \centering
+  \includegraphics[width=0.8\textwidth]{RawSurv.pdf}
+\end{figure}
+
+From the survivorship function, the average age of exit is calculated using the method described in Section 3. Before adjusting for non-exits, this gives a modelled average age at exit of 21.1. This method assumes a different age mix (based on projecting the survival function) but is close to the survey result of 21.25. The adjustment for non-exits is to allow for those individuals aged 40 who have not exited (just under 2\%) who are treated as right censored in the hazard rate calculation. These individuals are assumed to exit at age 40 which underestimates the actual (unknown) age of exit. This adjustment results in 21.9 as the baseline modelled average age of exit across the full HILDA survey period.
+
+\subsection{Household Formation by Wave}
+
+Figure \ref{ExitbyWave} shows how the household formation rate varies by wave. The pattern may be distorted by the mix of ages varying from the first wave (which includes the initial intake of older ages) to later waves (intakes primarily at age 15).
+
+\begin{figure}[htpb]
+  \caption{Household Formation by Hilda Wave}
+  \label{ExitbyWave}
+  \centering
+  \includegraphics[width=0.8\textwidth]{WaveRate.pdf}
+\end{figure}
+
+In Table \ref{rate1}, the modelled average age at exit by wave is shown. The average age at exit calculating directly from the data does not adjust for the likely exit age of those who are not observed to exit (right censored issue). As the first wave starts with no individuals aged over 25 omitting this adjustment is greater than for later waves where more older individuals will exist (ageing from previous waves). The modelled average age adjusts for this issue by estimating a survival function for the whole data set and using this to calculate average age for each wave using the proportional difference for each wave. This adjusted average age of exit shows an increasing overall trend in line with the declining rate of exit.
+
+\begin{table}[htpb]
+  \centering
+  \caption{Average Age for Leaving Home}
+  \label{rate1}
+\begin{tabular}{@{}cccccc@{}}
+\toprule
+Year & Average age & Year & Average age & Year & Average age\tabularnewline
+\midrule
+2001 & 21.9 & 2006 & 22.7 & 2011 & 22.9 \tabularnewline
+2002 & 22.0 & 2007 & 22.1 & 2012 & 23.2 \tabularnewline
+2003 & 21.9 & 2008 & 22.7 & 2013 & 23.4 \tabularnewline
+2004 & 21.8 & 2009 & 23.0 & 2014 & 23.6 \tabularnewline
+2005 & 22.1 & 2010 & 23.1 & 2015 & 23.2 \tabularnewline
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\subsection{Tenure Choice}
+The HILDA dataset shows whether a household owns or rents their property. Prior to forming independent households, only 20\% of leavers are in households that rent.  On leaving home, 83\% of exits move into a household that rents (where the tenure choice is known). This ratio has not varied significantly by wave with no clear trend in the data. The ratio does vary by age with fewer at young ages moving into owned housing, although this increases to a peak in their late 20s.
+
+\subsection{Housing Costs}
+The HILDA survey provides the household's own estimate of their house value. Such estimates can be subject to bias during periods of increasing prices where householders may overestimate their house values \parencite{henriques2013perceptions}. Interestingly during price falls, households appear to be better at estimating the degree of the price fall but do not adjust the prior overestimates of value during the price rise. As a result, this study used the RP data for house price levels.
+
+The RP dataset has both housing transactional data and housing listing data. The transactional data is a record of actual sales provided by the valuer generals from each state and territory. This data is mapped to year (based on contract date if available and settlement date if not) and state region (e.g. Sydney and rest of NSW). The measure is taken as the median of all transactions between \$100,000 and \$5 million (the limits are to remove data that appeared spurious). A hedonic price model was investigated; however insufficient property detail (e.g. number of bedrooms) is available for the earlier years. The data is then deflated using the CPI rate with a base year of 2001. The same deflation factor is applied to all nominal amounts (i.e. mortgage costs, rent costs and income levels).
+
+As an alternative to the RP house price transactional data, the HILDA survey asks each year for the household to value their property. In addition, the survey collects how much each household usually pays in rent or mortgage costs. Again, this data is mapped to year and state region, deflated for CPI and measured at the median. This is done for all households across the HILDA data set.
+
+The RP dataset also provides listing or advertising data of asking rents that could be used to estimate rental costs. Unfortunately, this data is sparse for most regions prior to 2005. Although the data then improves, this is not sufficiently complete for use with the earlier years of the HILDA survey. Where available the data correlated reasonably well with the HILDA rental cost data. The equivalent sales listing data is likely less reliable that the alternative transactional data and is not considered further. As a result, the housing price data is taken from the RP transaction data and the rental and mortgage costs data is taken from the HILDA survey.
+
+In Table \ref{houseVar}, we show the average values and variation in these housing costs. Note that the between variation is across median values by region. There is considerably more variation between individual transactions and households which is not shown in this table.
+
+\begin{table}[htpb]
+\centering
+\caption{Variation in Housing Cost Measures}
+\label{houseVar}
+\begin{tabular}{lrrrr}
+\toprule
+Housing Measure & Mean of & Variation & Across regions & Over time\tabularnewline
+ & medians & in medians & (between) & (within)\tabularnewline
+\midrule
+  RP House Prices & 258,116 & 69,346 & 58,495 & 40,424 \\
+  HILDA House Prices & 319,729 & 101,852 & 83,660 & 62,288 \\
+  HILDA Rents & 766 & 199 & 161 & 125 \\
+  HILDA Mortgages & 1,127 & 320 & 245 & 216 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The HILDA own estimates of house prices appear to overstate actual transaction values noting that the home characteristics may simply be different between the two sources. This is line with the findings referred to above \parencite{henriques2013perceptions}. Rent and mortgage costs are on a per month basis (not per week as is commonly quoted elsewhere). The variation across region and time is reasonably balanced.
+
+Table \ref{houseCor} below shows the correlation between these measures. This shows that the two alternative price measures are closely correlated. Rental and mortgage costs are also largely correlated with house prices and each other.
+
+\begin{table}[htpb] \centering
+  \caption{Correlation of Housing Cost Measures}
+  \label{houseCor}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & RP House & HILDA & HILDA & HILDA \tabularnewline
+ & Prices & House Prices & Rents & Mortgages \tabularnewline
+\midrule
+RP Prices & 1.000 & 0.969 & 0.832 & 0.843 \\
+  HILDA Prices & 0.969 & 1.000 & 0.807 & 0.872 \\
+  HILDA Rents & 0.832 & 0.807 & 1.000 & 0.822 \\
+  HILDA Mortgages & 0.843 & 0.872 & 0.822 & 1.000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Economic Measures}
+
+Economic measures are used to provide additional controls for the analysis and to convert nominal measures to real measures. This data is obtained from the ABS and RBA.
+
+Data on state unemployment is sourced from the ABS, category number `6202.0 Labour Force, Australia'. The state unemployment rate for each year is calculated by averaging the number of persons employed and unemployed over that year and taking the ratio of unemployed over total labour force.
+
+The ABS data provides a measure of state income, category number `5206.0 Australian National Accounts'. This is considered as a measure of the level of economic activity in each state. The state income growth rate is estimated using two methods. First, the year on year growth rate from December to December is calculated. However, for some states (e.g. Northern Territory) this calculation is volatile. Hence, a second approach is also used where the capital is averaged over the year and the the growth in the annual average is used. This approach provides a less volatile measure.
+
+CPI indices are also obtained from the ABS (category number `6401.0 Consumer Price Index, Australia') and used to deflated nominal amounts to common 2001 prices.
+
+Mortgage rates are obtained from RBA data sources (series F05, `Lending rates; Housing loans; Banks; Variable; Standard; Owner-occupier').
+
+\subsection{Household and Individual Data}
+
+The main model includes controls for the following household and individual factors found in the HILDA survey: gender, number of siblings and whether parents own or rent.  Other controls were considered but were found either not to have an impact on the decision to leave home or to not show sufficient variation. The data for numbers of siblings is grouped for all those with 2 or more siblings as little variation occurred with more siblings. The proportions in each group are shown in Table \ref{HILDATab}.
+
+\begin{table}[htpb]
+\centering
+\caption{Summary of Household and Individual Data}
+\label{HILDATab}
+\begin{tabular}{llr}
+\toprule
+Description & Category & Percentage \\
+&& in Risk Set \\
+\midrule
+Gender & Female &  46.3\% \\
+   & Male &  53.7\% \\
+   & Total & 100.0\% \\
+\midrule
+Sibling Count & 1 sibling &  30.9\% \\
+   & 2+ siblings &  55.7\% \\
+   & No siblings &   5.1\% \\
+   & No data &   8.4\% \\
+   & Total & 100.0\% \\
+\midrule
+Whether Parents Own & Own &  80.5\% \\
+    & Rent &  19.5\% \\
+    & Total & 100.0\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Education, Employment and Marital Status}
+
+The HILDA data provides information on education status of each responding individual and also on labour force status (e.g. whether employed). These fields are closely related as for instance those in education (particularly those in school) are less likely to be working full time. For this reason, the two status are considered together and the following categories are derived (Table \ref{empEduTab}).
+
+\begin{table}[htpb]
+\centering
+\caption{Employment and Education Categories}
+\label{empEduTab}
+\begin{tabular}{lr}
+\toprule
+Category & Percentage \\
+& in Risk Set \\
+\midrule
+School &  38.9\% \\
+  Working Full Time &  16.0\% \\
+  College and Working &  11.0\% \\
+  Working Part Time &   9.3\% \\
+  No Response &   7.6\% \\
+  College Part Time &   5.1\% \\
+  College Not Working &   4.3\% \\
+  Neither in education & \\
+  nor labour force &   4.2\% \\
+  Unemployed &   3.6\% \\
+  Total & 100.0\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Whether a person is married or partnered could also effect the decision to leave home. Table \ref{marriedTab} sets out the proportion married in the risk set and among exits. The proportion partnered remains a minority on exit; however there is likely to be a strong link between forming a domestic partnership and leaving home which is considered in the modelling section.
+
+\begin{table}[htpb]
+\centering
+\caption{Whether Partnered}
+\label{marriedTab}
+\begin{tabular}{lrr}
+\toprule
+Status & Percentage in & Percentage \\
+ & Risk Set & in Exits \\
+\midrule
+No Partner &  83.6\% &  48.2\% \\
+  Unknown &  11.0\% &  27.7\% \\
+  Partnered &   5.4\% &  24.1\% \\
+  Total & 100.0\% & 100.0\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\section{Econometric Model}
+
+The decision to leave home is assumed to occur when the utility of living independently exceeds the utility of staying at home plus the costs of moving. To model this decision the rate of leaving home needs to be modelled including the relevant determinants of the utility functions as co-variates. Different models are possible as now discussed.
+
+The methods used in the literature to model household formation are based on probability choice models for leaving home in the next year. Some of the analysis jointly models the choice to leave with the choice of tenure. The approach taken here differs using a hazard rate model that models the rate of leaving home as a function of time since age 15. The motivation for this approach is that the choice of leaving home is closely linked to age and that the length of time dependent is collinear with age. This is shown by the data above but is also commonsense that as people age their propensity to live independently will also change. The paper by \cite{lee2013happens} did show results based on a hazard rate model but preferred the multinominal logit model as they wished to understand the factors underlying tenure choice. This is less of a concern in this analysis and tenure choice is found not to unduly effect the key estimates.
+
+The method chosen is the Cox Proportional Hazards model (see chapters 17, 18 and 23 of \cite{cameron2005microeconometrics} and \cite{brostrom2012event}). This is a semi-parametric approach where the hazard rates are calculated directly from the data while the proportional differences are modelled structurally. This approach has the advantage of not assuming a parametric or distributional form for the hazard rates as if the wrong form is chosen then the proportional estimates are incorrect.
+
+The baseline calculated hazard rate is represented by $h_0(t)$ while $t$ represents age (or  duration of time spent as a dependent). The modelled co-variates are represented by the $\mathbf{X}$ matrix and the proportional hazards by the $\beta$ vector. The determinants of the utilities referred to above are included in the $\mathbf{X}$ matrix where available. The formula for the hazard rates is shown as follows:
+\[h(t|\mathbf{X}, \beta) = h_0( t ) \exp ( \mathbf{X}  \beta )\]
+
+The Cox estimation method for the $\beta$ coefficients does not require an estimation of the hazard rate itself. Instead, the partial likelihood method suggested by Cox is used where the likelihood of each coefficient is determined as follows \parencite{cox1972regression}:
+\[ L(\beta) = \prod_{k = 1}^{K} \frac{\exp ( \sum_{i \in m(t_k)}\mathbf{ X_i}  \beta )}{\sum_{l \in mp(t_k)}\exp ( \sum_{i \in l}\mathbf{X_i}  \beta ) }  \]
+
+Where $k$ is an index of $\{0, 1, \dots, K\}$, $t_k$ (for $k>0$) represents all the times in order from the earliest to the latest when one or more exits or hazards occurred and $t_0$ represents the time just before the earliest time that an exit could have occurred (age 15 in this case). The likelihood is evaluated over all such times. The actual cases that exited at time $t_k$ is the set $m(t_k)$ which is of size $d_k$. The set, $mp(t_k)$, in the denominator represents the set of all possible sets of size $d_k$ that are subsets of the risk set, $R(t_k)$.
+
+This original estimation methodology suggested by Cox is computationally intense due to the calculation over all the possible $d_k$ sized subsets and instead the methodology of \cite{efron1977efficiency} is used. This is encoded in the ``Survival'' package chosen to implement the estimation in the R statistical software \parencite{survival}. The Efron approximation estimates the denominator as follows:
+\[  \sum_{l \in mp(t_k)}\exp \left( \sum_{i \in l}\mathbf{X_i}  \beta \right) = \prod_{j=1}^{d_k}\left[\sum_{l \in R(t_k)}\exp(\mathbf{X_l}\beta) - \frac{j-1}{d_k}\sum_{l \in m(t_k)} \exp (\mathbf{X_l}\beta) \right] \]
+Simulations performed by \cite{hertz1997validity} show that the Efron estimators performed better than the alternatives suggested by Breslow and Kalbfleisch-Prentice.
+
+The specification of the Cox model requires the impact of the determinants on the hazard rate to be proportional. Other assumptions are that the covariates are exogenous and that unobserved heterogeneity is not significant.
+
+Using a non-parametric method means that left truncated (or censored) individuals enter the risk set when first enumerated and no adjustment is made for the period when they were likely at risk but were not enumerated. Similarly right censored individuals simply leave the risk set when last enumerated and do not contribute to the exit count at that time. On this basis, the survival function is the fraction of the ``at risk'' population who remain dependent at each age. This function is estimated directly from the data using the Kaplan-Meier estimator as follows:
+\[ \hat{S}(t_k, p)= \prod_{i=1}^k \left(1-{p \frac {d_i}{n_i}}\right) \]
+where $d_i$ is as above and $n_i$ is the size of the risk set $R(t_i)$. Note that $S(t_0)$ is equal to $1$ where $t_0$ is age 15. The proportional factor is applied ($p$) to each hazard rate (i.e. $\frac {d_i}{n_i}$) as shown above, where the base survival curve has $p=1$.
+
+The survival function is used to calculate the average age of leaving home as follows:
+\begin{equation*}
+  avgage = \sum_{k = 1}^K (\hat{S}(t_{k-1})-\hat{S}(t_{k})) \times t_k + \hat{S}(t_K) \times t_K
+\end{equation*}
+Note that $t_K$ is the last time an exit occurs and the remaining individuals are assumed to exit at that time. In the main model presented only 2\% of individuals reach this point so the approximation is minor. Perhaps more intuitively this calculation can be rewritten as:
+\begin{equation*}
+  avgage = t_0 + \sum_{k = 0}^{K-1} \hat{S}(t_{k})(t_{k+1} - t_{k})
+\end{equation*}
+
+\section{Impact on leaving home of housing costs}
+\subsection{Base Model}
+The proportional impact on the hazard rate of leaving home when housing prices change are shown in Table \ref{mainRes}. Several models are presented, first with no co-variates other than house prices, secondly with household and individual controls that are unlikely to be jointly determined with leaving home and then with economic controls.
+
+% Table created by stargazer v.5.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
+% Date and time: Tue, Apr 03, 2018 - 17:49:50
+\begin{table}[htpb] \centering
+  \begin{threeparttable}
+  \caption{Household Formation Models}
+  \label{mainRes}
+  \tabularnewline
+\begin{tabular}{@{\extracolsep{1pt}}lcccc}
+\toprule
+& Basic model & Individual and  & Economic \\
+&  & Household Controls & Controls \\
+\midrule
+Males &  & $-$0.207$^{***}$ & $-$0.210$^{***}$ \\
+ &  & (0.034) & (0.034) \\
+\addlinespace[0.5em]
+2+ siblings &  & 0.196$^{***}$ & 0.196$^{***}$ \\
+ &  & (0.039) & (0.039) \\
+\addlinespace[0.5em]
+No siblings &  & $-$0.049 & $-$0.046 \\
+ &  & (0.087) & (0.087) \\
+\addlinespace[0.5em]
+No data on siblings &  & 0.224$^{***}$ & 0.227$^{***}$ \\
+ &  & (0.062) & (0.062) \\
+\addlinespace[0.5em]
+Parents rent &  & 0.357$^{***}$ & 0.366$^{***}$ \\
+ &  & (0.040) & (0.040) \\
+\addlinespace[0.5em]
+Unemployment rate &  &  & $-$0.137$^{***}$ \\
+ &  &  & (0.027) \\
+\addlinespace[0.5em]
+Mortgage rate &  &  & $-$0.047$^{*}$ \\
+ &  &  & (0.026) \\
+\addlinespace[0.5em]
+Log house prices & $-$1.119$^{***}$ & $-$1.121$^{***}$ & $-$1.301$^{***}$ \\
+ & (0.063) & (0.063) & (0.073) \\
+\addlinespace[0.5em]
+Observations & 24,722 & 24,722 & 24,722 \\
+R$^{2}$ & 0.012 & 0.018 & 0.020 \\
+Wald Test & 313$^{***}$ & 466$^{***}$ & 488$^{***}$ \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[flushleft]
+    \item $^{***}$Significant at 1\%; $^{**}$Significant at 5\%; $^{*}$Significant at 10\%.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+Without any other co-variates, the rate of leaving home is strongly related to house prices. This effect measures the elasticity of the leaving rate to house prices showing that a 10\% increase in real house prices reduces the leaving rate by 11.6\% (the calculation is $(1+10\%)^{-1.301} - 1$, where $-1.301$ is the coefficient). Such a change increases the average age of leaving home by 7 months.
+
+This results contrasts with the \cite{lee2013happens} study of US experience (US study) that showed no impact from State median house prices although an impact of median rental prices is observed. Note that the study by \cite{byrne2014household} of Irish experience (Irish study) did not consider directly the impact of house prices (houses prices were factored into the user cost of housing which is a composite measure including several effects).
+
+The individual and household variables included show a significant effect. Males are 19\% slower to leave than females (note the calculation is $\exp(-0.207)-1$). This is similar to the Irish study with the US study showing a  stronger response with females being 60\% more likely to leave home. Having more siblings does encourage someone to leave home sooner which is perhaps unsurprising as there is likely to be less space in such a family home. Where parents' rent, children are $43\%$ ($\exp(0.359)-1$) more likely to leave home in any year. The higher leaving rate for parents who rent may be due to differing socio-economic conditions among renters. The US study interestingly does not show a significant effect based on parent's tenure choice.
+
+Economic variables considered include the unemployment rate and the mortgage rate which are both significant. The state income growth rate is found not to be significant. The inclusion of economic variables increases the elasticity with respect to house prices perhaps due to negative time series correlation between house price increases and the unemployment rate. The unemployment rate is needed as a control to estimate the house price effect more consistently.  The US study estimate of the unemployment effect is similar although smaller ($-0.079$). It is not surprising that a higher state unemployment rate results in lower household formation.
+
+Potentially, jointly determined covariates such as education, employment and marital status are considered later. There is likely interaction between the decision to change these statuses and the decision to leave home.
+
+Figure \ref{modSurv} shows the survival functions for the base model including the impact on the survival model of a 10\% increase (triangles) and reduction (crosses) in hazard rates. Table \ref{ageFactor} shows the average age of leaving home from the base model as well as the average ages for proportional increases and reductions in hazard rates.
+
+ \begin{figure}[htpb]
+   \caption{Modelled Survival Function}
+   \label{modSurv}
+   \centering
+   \includegraphics[width=0.8\textwidth]{ModSurv.pdf}
+ \end{figure}
+
+\begin{table}[htpb] \centering
+\begin{threeparttable}
+ \caption{Change in Average Age}
+ \label{ageFactor}
+ \begin{tabular}{@{}ccc@{}}
+ \toprule
+ Factor Applied to  & Average Age & Change in Age \\
+ Hazard Rate &&(months) \\
+ \midrule
+   0.80 & 23.0 & 13 \\
+   0.90 & 22.5 & 6 \\
+   1.00 & 22.0 & 0 \\
+   1.10 & 21.6 & -5 \\
+   1.25 & 21.1 & -11 \\
+ \bottomrule
+\end{tabular}
+\end{threeparttable}
+\end{table}
+
+\subsection{Other Measures of Housing Cost}
+The earlier review of data showed that the different measures of housing costs have large correlations. Table \ref{Res2} shows the effect of each housing cost measure in turn.
+
+% Table created by stargazer v.5.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
+% Date and time: Tue, Apr 03, 2018 - 18:18:20
+\begin{table}[htpb] \centering
+  \begin{threeparttable}
+  \caption{Household Formation by Housing Cost Measures}
+  \label{Res2}
+  \tabularnewline
+  \begin{tabular}{@{\extracolsep{1pt}}lcccc}
+    \toprule
+     & House prices & Mortgage costs & Rental costs & All housing costs \\
+    \midrule
+    Males & $-$0.210$^{***}$ & $-$0.202$^{***}$ & $-$0.204$^{***}$ & $-$0.210$^{***}$ \\
+     & (0.034) & (0.034) & (0.034) & (0.034) \\
+\addlinespace[0.5em]
+    2+ siblings & 0.196$^{***}$ & 0.205$^{***}$ & 0.199$^{***}$ & 0.195$^{***}$ \\
+     & (0.039) & (0.039) & (0.039) & (0.039) \\
+\addlinespace[0.5em]
+    No siblings & $-$0.046 & $-$0.067 & $-$0.058 & $-$0.046 \\
+     & (0.087) & (0.087) & (0.087) & (0.087) \\
+\addlinespace[0.5em]
+    No data on siblings & 0.227$^{***}$ & 0.221$^{***}$ & 0.216$^{***}$ & 0.227$^{***}$ \\
+     & (0.062) & (0.062) & (0.062) & (0.062) \\
+\addlinespace[0.5em]
+    Parents rent & 0.366$^{***}$ & 0.369$^{***}$ & 0.371$^{***}$ & 0.366$^{***}$ \\
+     & (0.040) & (0.040) & (0.040) & (0.040) \\
+\addlinespace[0.5em]
+    Unemployment rate & $-$0.137$^{***}$ & $-$0.090$^{***}$ & $-$0.055$^{**}$ & $-$0.136$^{***}$ \\
+     & (0.027) & (0.027) & (0.026) & (0.027) \\
+\addlinespace[0.5em]
+    Mortgage rate & $-$0.047$^{*}$ & 0.024 & $-$0.037 & $-$0.048$^{*}$ \\
+     & (0.026) & (0.026) & (0.026) & (0.027) \\
+\addlinespace[0.5em]
+    Log house prices & $-$1.301$^{***}$ &  &  & $-$1.311$^{***}$ \\
+     & (0.073) &  &  & (0.155) \\
+\addlinespace[0.5em]
+    Log mortgage costs &  & $-$1.108$^{***}$ &  & 0.040 \\
+     &  & (0.072) &  & (0.171) \\
+\addlinespace[0.5em]
+    Log rent costs &  &  & $-$1.229$^{***}$ & $-$0.029 \\
+     &  &  & (0.078) & (0.193) \\
+\addlinespace[0.5em]
+   Observations & 24,722 & 24,722 & 24,722 & 24,722 \\
+   R$^{2}$ & 0.020 & 0.016 & 0.016 & 0.020 \\
+   Wald Test & 488$^{***}$ & 408$^{***}$ & 422$^{***}$ & 488$^{***}$ \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}[flushleft]
+      \item $^{***}$Significant at 1\%; $^{**}$Significant at 5\%; $^{*}$Significant at 10\%.
+  \end{tablenotes}
+  \end{threeparttable}
+\end{table}
+
+When each housing cost measure is considered separately, house prices have the greatest elasticity followed by rent costs and then mortgage costs. The Wald test comparing the models shows that house prices have the greatest explanatory effect. This result is surprising as mortgage and rent costs arguably are better measures of the costs facing young people and, in particular, most young people rent on leaving home. As mortgage costs are an increasing function of house prices and interest rates, the correlation between these measures is not surprising. The decision to purchase a house is also driven by an expectation of future house price increases and this may be driven by the recent history of such increases. In terms of rental costs, the link is less direct but may simply be that housing supply and demand factors impact house prices and rental costs in similar ways.  House prices may have a more significant effect on young people's perceptions as changes in these prices are widely reported in news media.
+
+The close link between house prices and rental costs may just be related to the particular history that Australia has enjoyed over the last 15 years with continuing economic expansion and growth in population. Different future conditions may result in this relationship changing and the two measures diverging. The study by \cite{lee2013happens} of US experience showed no impact from house price moves and an impact of $-1.331$ from state median rents which is close to the impact from Australian state median rents in this paper of $-1.229$. The study of Irish experience \parencite{byrne2014household} shows that rents as a percentage of income have a significant effect with higher rents reducing household formation (noting again the Irish study did not look directly at house prices).
+
+The high correlation of the three housing cost measures means that when all are included in the model, the housing price measure dominates and the elasticities with respect to mortgage and rental costs are no longer significant. When rent costs are included on their own, the effect of unemployment reduces. This is likely due to rental costs being partly driven by unemployment rates.
+
+\subsection{Sensitivity Analysis of House Cost Measures}
+
+The housing cost result is tested for robustness by considering estimates of house prices based on the lower quartile of house values that may be more representative of the costs facing young people. To test for this influence, an index of the median of lower quartile house prices is constructed (note this is simply the 12.5\% percentile). This index had a 0.98 correlation with the median house prices and there is only a small increase in the elasticity with respect to house prices (0.04). This shows that the results are not sensitive to the value quartile of houses considered.
+
+A further model specification is to use a competing risk model with different exit states based on whether the young person rents after exits or moves into their own home. As the tenure choice is not recorded in all cases, a third exit category is where the exit is to unknown tenure. If the elasticity of rental costs varies significantly across these different exits that would suggest that modelling by tenure choice is important (one of the motivations of the US and Irish studies). Table \ref{HC_Table} shows the results of this analysis.
+
+% Table created by stargazer v.5.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
+% Date and time: Sun, May 27, 2018 - 20:29:09
+\begin{table}[htpb] \centering
+  \begin{threeparttable}
+  \caption{Home Ownership Sensitivities}
+  \label{HC_Table}
+  \tabularnewline
+  \begin{tabular}{@{\extracolsep{1pt}}lcccc}
+\toprule
+ & Rent Cost & Exit to & Exit to & Unknowns \\
+ & model & Rental & Owned & \\
+\midrule
+Proportion in & 100\% & 56\% & 11\%  & 33\% \\
+each category & & & & \\
+\addlinespace[0.5em]
+ Males & $-$0.204$^{***}$ & $-$0.208$^{***}$ & $-$0.148$^{***}$ & $-$0.048 \\
+  & (0.034) & (0.037) & (0.054) & (0.058) \\
+\addlinespace[0.5em]
+ 2+ siblings & 0.199$^{***}$ & 0.213$^{***}$ & 0.178$^{***}$ & 0.247$^{***}$ \\
+  & (0.039) & (0.043) & (0.066) & (0.073) \\
+\addlinespace[0.5em]
+ No siblings & $-$0.058 & $-$0.084 & $-$0.084 & $-$0.277 \\
+  & (0.087) & (0.098) & (0.148) & (0.180) \\
+\addlinespace[0.5em]
+ No data on siblings & 0.216$^{***}$ & 0.335$^{***}$ & 0.905$^{***}$ & 1.135$^{***}$ \\
+  & (0.062) & (0.066) & (0.082) & (0.089) \\
+\addlinespace[0.5em]
+ Parents rent & 0.371$^{***}$ & 0.473$^{***}$ & 0.363$^{***}$ & 0.517$^{***}$ \\
+  & (0.040) & (0.042) & (0.064) & (0.066) \\
+\addlinespace[0.5em]
+ Unemployment rate & $-$0.055$^{**}$ & $-$0.073$^{**}$ & $-$0.019 & $-$0.054 \\
+  & (0.026) & (0.029) & (0.042) & (0.045) \\
+\addlinespace[0.5em]
+ Mortgage rate & $-$0.037 & $-$0.080$^{***}$ & 0.066 & 0.015 \\
+  & (0.026) & (0.029) & (0.042) & (0.046) \\
+\addlinespace[0.5em]
+ Log rent costs & $-$1.229$^{***}$ & $-$1.212$^{***}$ & $-$1.027$^{***}$ & $-$0.869$^{***}$ \\
+  & (0.078) & (0.085) & (0.127) & (0.136) \\
+\addlinespace[0.5em]
+Observations & 24,722 & 24,722 & 24,722 & 24,722 \\
+R$^{2}$ & 0.016 & 0.016 & 0.010 & 0.011 \\
+Wald Test & 422.050$^{***}$ & 400.300$^{***}$ & 270.470$^{***}$ & 313.520$^{***}$ \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[flushleft]
+  \item $^{***}$Significant at 1\%; $^{**}$Significant at 5\%; $^{*}$Significant at 10\%.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+The model with just rental exits has a similar response to log rental costs as the overall model. The impact is reduced for cases where exits are to owned categories or the category is unknown, nevertheless the estimates continue to be significant and large. Many of the unknown cases are where an individual is no longer participating in the HILDA survey and the reasons for this non-participation may well represent explanatory variables themselves although not identifiable (as they do not participate).
+
+\subsection{Unobserved heterogeneity}
+
+Hazard models may have significant unobserved random effects that can make estimates inconsistent. Two specifications of random effects are considered, both modelled by adding a Gaussian term to the hazard rate estimation allowing for either variation by individual (the first specification) or by location (the second specification). In addition, the fixed effects of location are estimated. The results are shown below in Table \ref{random}.
+
+\begin{table}[htpb] \centering
+  \begin{threeparttable}
+  \caption{Inclusion of Random Effects}
+  \label{random}
+  \tabularnewline
+\begin{tabular}{@{\extracolsep{1pt}}lcccc}
+\toprule
+& No Random & Individual  & Random Location & Fixed Location \\
+& Effects &  Effects & Effects & Effects \\
+\midrule
+Males & $-0.210^{***}$ & $-0.243^{***}$ & $-0.234^{***}$ & $-0.235^{***}$ \\
+   & $(0.034)$ & $(0.040)$ & $(0.034)$ & (0.034)\\
+   \addlinespace[0.5em]
+  2+ siblings & $0.196^{***}$ & $0.249^{***}$ & $0.174^{***}$  & $0.174^{***}$\\
+   & $(0.039)$ & $(0.046)$ & $(0.039)$ & $(0.039)$ \\
+   \addlinespace[0.5em]
+  No siblings & $-0.046$ & $-0.036$ & $-0.079$ & $-0.078$ \\
+   & $(0.087)$ & $(0.102)$ & $(0.088)$ & $(0.088)$ \\
+   \addlinespace[0.5em]
+  No data on siblings & $0.227^{***}$ & $0.283^{***}$ & $0.201^{***}$ & $0.202^{**}$ \\
+   & $(0.062)$ & $(0.070)$ & $(0.062)$ & $(0.062)$\\
+   \addlinespace[0.5em]
+  Parents rent & $0.366^{***}$ & $0.455^{***}$ & $0.338^{***}$ & $0.338^{***}$\\
+   & $(0.040)$ & $(0.046)$ & $(0.040)$ & $(0.040)$\\
+   \addlinespace[0.5em]
+  Unemployment rate & $-0.137^{***}$ & $-0.177^{***}$ & $0.008$ & $0.033$\\
+   & $(0.027)$ & $(0.029)$ & $(0.037)$ & $(0.039)$\\
+   \addlinespace[0.5em]
+  Mortgage rate & $-0.047^{*}$ & $-0.070^{**}$ & $0.049$ & $0.065^*$\\
+   & $(0.026)$ & $(0.027)$ & $(0.031)$ & $(0.031)$\\
+   \addlinespace[0.5em]
+  Log house prices & $-1.301^{***}$ & $-1.401^{***}$ & $-0.563^{***}$ & $-0.442^{**}$\\
+   & $(0.073)$ & $(0.084)$ & $(0.154)$ & $(0.162)$\\
+\addlinespace[0.5em]
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[flushleft]
+    \item $^{***}$Significant at 1\%; $^{**}$Significant at 5\%; $^{*}$Significant at 10\%.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+The individual effects caused some change to the estimates; however the coefficient related to house prices did not change significantly.  For this reason, the rest of the estimation proceeded without random effects in part due to the computational difficulty of including these effects given the small change in estimates.
+
+The random effect for location does have a significant impact; however it is likely that location effects are correlated to the other explanatory variables suggesting that a fixed effect specification may result in more consistent estimates. The specification with fixed location effects reduces the elasticity estimate with respect to house prices  to $-0.44$. Including the fixed location effects removes the mean difference between locations form the estimation. This results in other variables being identified only by within location variation. The location effects in total are significant with a Wald statistic of 746, which is significant based on a Chi-squared test.
+
+Table \ref{ModLoc} shows the results when a separate regression is run for each location. Generally the results are negative as expected; however many of the results are not significant with high standard errors. Overall this suggests that there may be insufficient data to build a reliable model by location. The estimation has proceeded without location effects.
+
+\begin{table}[htbp]
+  \centering
+    \caption{Results by Location}
+    \label{ModLoc}
+    \tabularnewline
+    \begin{tabular}{@{}lrrrl@{}}
+      \toprule
+      Location & Events & House Price  & Standard & P-value \tabularnewline
+       &  & Coefficient & Error &  \tabularnewline
+      \midrule
+      Sydney & 529 & -0.442 & 0.851 & 0.604 \\
+        Rest of NSW & 548 & 0.317 & 0.699 & 0.650 \\
+        Melbourne & 535 & -0.852 & 0.342 & 0.013 \\
+        Rest of VIC & 314 & -0.201 & 0.838 & 0.810 \\
+        Brisbane & 317 & -1.309 & 0.581 & 0.024 \\
+        Rest of QLD & 492 & -0.498 & 0.703 & 0.479 \\
+        Adelaide & 212 & -0.523 & 0.490 & 0.285 \\
+        Rest of SA & 119 & -0.367 & 1.387 & 0.791 \\
+        Perth & 235 & -1.445 & 0.534 & 0.007 \\
+        Rest of WA & 86 & 2.980 & 1.050 & 0.005 \\
+        Tasmania & 117 & -0.976 & 1.297 & 0.452 \\
+        NT & 21 & 6.249 & 2.763 & 0.024 \\
+        ACT & 88 & 1.395 & 0.951 & 0.142 \\
+      \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Employment and Education Effects}
+
+Employment is potentially determined jointly with the decision to leave home. Upon getting a job, an individual may take this as a trigger to seek household independence.
+
+The HILDA data set provides details on labour force status. This is added as a covariate with the elasticity of household formation with respect to house prices moving by an insignificant amount. The other covariates did not significantly change other than a modest change in male lives.
+
+However, closer analysis of the data showed that employment status is closely linked to education status. Hence, the two are considered jointly resulting in the following regression results (Table \ref{empEdu}).
+
+\begin{table}[htbp] \centering
+  \begin{threeparttable}
+    \caption{Impact of Employment and Education Status}
+    \label{empEdu}
+    \tabularnewline
+    \begin{tabular}{@{\extracolsep{1pt}}lccc}
+      \toprule
+       & Main model & Employment \\
+       &  & and Education \\
+      \midrule
+      Log house prices & $-$1.301$^{***}$ & $-$1.244$^{***}$ \\
+       & (0.073) & (0.074) \\
+    \addlinespace[0.5em]
+      College not working &  & 0.691$^{***}$ \\
+       &  & (0.102) \\
+    \addlinespace[0.5em]
+      College working &  & 0.754$^{***}$ \\
+       &  & (0.079) \\
+    \addlinespace[0.5em]
+      Part time college &  & 0.902$^{***}$ \\
+       &  & (0.088) \\
+    \addlinespace[0.5em]
+      Neither working &  & 0.767$^{***}$ \\
+      nor in labour force &  & (0.093) \\
+    \addlinespace[0.5em]
+      No Response &  & 1.116$^{***}$ \\
+       &  & (0.200) \\
+    \addlinespace[0.5em]
+      Unemployed &  & 1.008$^{***}$ \\
+       &  & (0.092) \\
+    \addlinespace[0.5em]
+      Working FT &  & 1.202$^{***}$ \\
+       &  & (0.069) \\
+    \addlinespace[0.5em]
+      Working PT &  & 0.942$^{***}$ \\
+       &  & (0.074) \\
+    \addlinespace[0.5em]
+     Observations & 24,722 & 24,722 \\
+     R$^{2}$ & 0.020 & 0.032 \\
+     Wald Test & 488$^{***}$ & 816$^{***}$ \\
+    \bottomrule
+    \end{tabular}
+    \begin{tablenotes}[flushleft]
+        \item $^{***}$Significant at 1\%; $^{**}$Significant at 5\%; $^{*}$Significant at 10\%.
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}
+
+The elasticity with respect to house prices has not changed significantly which shows the model is robust to including employment and education. The Wald score is also increased showing that these covariates improve the model fit.
+
+The base line rate is based on those at school and, as expected, the rate of leaving home is significantly greater for the other statuses, reaching its highest level for those working full time (2.6 times the base rate, $e^{1.202}$).
+
+\subsection{Partnership Status}
+It is likely that moving out of home is connected with decisions on whether to get married or enter a defacto partnership. First the analysis considered the relationship status of individuals in the next period and categorised individuals as either partnered, single or unknown as shown in Table \ref{married}. Only the new covariates are shown with the elasticity with respect to house prices.
+
+% Table created by stargazer v.5.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
+% Date and time: Wed, May 02, 2018 - 17:19:46
+\begin{table}[!htbp] \centering
+  \begin{threeparttable}
+  \caption{Relationship Status and Leaving Home}
+  \label{married}
+\begin{tabular}{@{\extracolsep{1pt}}lcc}
+\toprule
+ & Main model & Relationship Status \\
+\midrule
+Log house prices & $-$1.301$^{***}$ & $-$1.107$^{***}$ \\
+ & (0.073) & (0.073) \\
+ \addlinespace[0.5em]
+Has partner &  & 2.421$^{***}$ \\
+ &  & (0.043) \\
+ \addlinespace[0.5em]
+Status not known &  & 2.096$^{***}$ \\
+ &  & (0.045) \\
+ \addlinespace[0.5em]
+Observations & 24,722 & 24,722 \\
+R$^{2}$ & 0.020 & 0.146 \\
+Wald Test & 489$^{***}$ & 4,585$^{***}$ \\
+    \bottomrule
+  \end{tabular}
+    \begin{tablenotes}[flushleft]
+        \item $^{***}$Significant at 1\%; $^{**}$Significant at 5\%;\\ $^{*}$Significant at 10\%.
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}
+
+Adding relationship status does not have a large impact on the elasticity with respect to house prices. However, the household formation rate is 11 times greater when partnered compared to single.
+
+To test further whether this impacts the sensitivity to house prices, a competing risk model is used. The exit events considers are ``exit and single'', ``exit and partnered'' and ``exit and unknown''. The results are shown in Table \ref{sepMarry}. As can be seen, the elasticity with respect to house prices is similar across these groups, showing that the different choices do not impact this coefficient.
+
+\begin{table}[!htbp] \centering
+\begin{threeparttable}
+  \caption{Relationship Status and Leaving Home}
+  \label{sepMarry}
+\begin{tabular}{@{\extracolsep{1pt}}lcccc}
+\toprule
+ & Main model & Single Exits & Partnered Exits & Unknowns \\
+\midrule
+Log house prices & $-$1.301$^{***}$ & $-$1.256$^{***}$ & $-$1.146$^{***}$ & $-$0.958$^{***}$ \\
+ & (0.073) & (0.084) & (0.101) & (0.138) \\
+\addlinespace[0.5em]
+Observations & 24,722 & 24,722 & 24,722 & 24,722 \\
+R$^{2}$ & 0.020 & 0.015 & 0.013 & 0.013 \\
+Wald Test & 488$^{***}$ & 373$^{***}$ & 329$^{***}$ & 376$^{***}$ \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[flushleft]
+    \item $^{***}$Significant at 1\%; $^{**}$Significant at 5\%; $^{*}$Significant at 10\%.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+\subsection{Income}
+
+The impact of own and family income is also considered as shown in Table \ref{tabInc}. The study by \cite{byrne2014household} of Irish experience did not look at the effect of income (income is only used to derive rent as a proportion of income). The study by \cite{lee2013happens}  of US experience considered family income and showed that it only had a small effect. In this study, we consider own income and family income net of own income.  Both have a significant impact although the impact is small in the case of family income. An increase in family income (net of own income) of $10\%$ would reduce the rate of leaving home by only $0.8\%$ which is a similar result to the US study. For personal income, there is a larger effect which is unsurprising. A $10\%$ increase in own income would increase the rate of leaving home by $2.3\%$. Note that these results have excluded individuals or families where no income is reported. Such families would likely have different rates of leaving home.
+
+\begin{table}[!htbp] \centering
+\begin{threeparttable}
+  \caption{Impact of Income on Leaving Home}
+  \label{tabInc}
+\begin{tabular}{@{\extracolsep{1pt}}lcc}
+\toprule
+& Main model & Income measures \\
+\midrule
+Log house prices & $-$1.301$^{***}$ & $-$1.227$^{***}$ \\
+ & (0.073) & (0.079) \\
+ & & \\
+Log own income &  & 0.243$^{***}$ \\
+ &  & (0.021) \\
+ & & \\
+Log family income &  & $-$0.083$^{***}$ \\
+ &  & (0.028) \\
+ & & \\
+Observations & 24,722 & 19,274 \\
+R$^{2}$ & 0.020 & 0.027 \\
+Wald Test & 488$^{***}$ & 511$^{***}$ \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[flushleft]
+    \item $^{***}$Significant at 1\%; $^{**}$Significant at 5\%; $^{*}$Significant at 10\%.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+\subsection{Simulation}
+
+In this section, the above results are used to indicate the likely effect on the age of leaving home if house prices continue to increase as they did in the past. The simulation shows that a further 5\% per annum increase in house prices over five years would increase the average age of leaving home by 1 year and 8 months. This is a significant increase and warrants further attention by policy makers.
+
+The starting point of the simulation is taken as the latest wave where exits could be measured being the 2015 wave. A hazard rate model is constructed from that year's data using covariates for gender, number of siblings, parents' rental status and location but not including variables that are time varying. This produced a base line result. A similar model is done for 2013 and 2014 to provide a history to which the projection can be compared.
+
+For the projection, 5\% per annum real growth is assumed in the median house price level. The survival function for 2015 is converted into hazard rates and these hazard rates are adjusted as follows:
+\begin{align*}
+    h(t|\mathbf{X}, \beta) &= h_0( t ) \exp( \mathbf{X_{-HP}}\beta_{-HP})  \exp ( \log(HP) \times  \beta_{HP} ) \\
+    h(t|\mathbf{X}, \beta) &= h_0( t ) \exp( \mathbf{X_{-HP}}\beta_{-HP})  HP^{\beta_{HP}}  \\
+    h'(t|\mathbf{X}, \beta) &= h_0( t ) \exp( \mathbf{X_{-HP}}\beta_{-HP}) (HP \times (1+g)^{yr})^{\beta_{HP}} \\
+    \frac{h'}{h} &= (1+g)^{yr \times \beta_{HP}}
+\end{align*}
+Where $HP$ is the median house price, $-HP$ are the other variables, $\beta_{HP}$ is the coefficient (taken from the main model as $-1.3$), $g$ is the annual growth in house prices ($5\%$) and $yr$ is the projected year from 1 to 5. The adjusted hazard rates are then converted back to a survival function. The various survival functions are shown in Figure \ref{plotSurv}. The survival functions are pushed further to the right as house prices continue to increase.
+\begin{figure}[htpb]
+  \caption{Projected Survival Function}
+  \label{plotSurv}
+  \centering
+  \includegraphics[width=0.8\textwidth]{plotSurv.pdf}
+\end{figure}
+
+The simulation is summarised using the model average age of leaving home (see Section 3 for a discussion of how this is calculated) and these are shown in Table \ref{ProgAvgAges}. A steadily increasing age of leaving home is projected if house prices continue to increase. In practice, the increase has not been so constant in the past.
+
+\begin{table}[htbp]
+\centering
+\caption{Projected Average Age of Leaving Home}
+\label{ProgAvgAges}
+\begin{tabular}{lrr}
+\toprule
+Year & Average age & House Price \\
+& of leaving & Growth \\
+\midrule
+2013 & 22.5 & 1.6\% \\
+  2014 & 22.7 & 3.4\% \\
+  2015 & 22.4 & 5.4\% \\
+  2016 & 22.7 & 5.0\% \\
+  2017 & 23.1 & 5.0\% \\
+  2018 & 23.4 & 5.0\% \\
+  2019 & 23.8 & 5.0\% \\
+  2020 & 24.1 & 5.0\% \\
+\bottomrule
+\end{tabular}
+
+\end{table}
+
+Note that the above averages differ from those shown earlier (see Table \ref{rate1}) as this earlier model is based on all data and only wave variation while this model is separate for each year and uses more covariates and hence a different calculation approach.
+
+\section{Conclusion}
+
+The analysis indicates an elasticity of household formation with respect to house prices in a range from -1.30 to -0.87. This provides strong evidence that an increase in house prices does delay when young people choose to leave home by between 5 and 7 months for a 10\% increase.
+
+Other measures of housing costs show strong correlation with housing prices and similar results are found when mortgage costs and rental costs are considered instead. Different specifications of the model are tested and the results are robust to these changes. Also each model showed results that aligned with intuition as to what would drive the decision to leave home (e.g. higher state unemployment rates making one less likely to leave home).
+
+The results suggests that policy makers should consider this effect when designing tax policies and social housing policies. Social welfare could be enhanced if housing costs reduce for young people. Further analysis could be done to find those changes in tax policy and social housing that have impacted the household formation rate. Tax policy changes could favour first home buyers over established owners and could include curbing the present tax advantages of property investment (such as negative gearing and capital gains tax exemptions). These are likely to prove unpopular with current property investors and hence meet popular resistance. Other areas that may be considered are further subsidies to first time home buyers or investments in social housing.
+
+\printbibliography{}  % Print the bibliograph
+
+\end{document}
