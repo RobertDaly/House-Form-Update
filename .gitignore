@@ -1,0 +1,16 @@
+# this stops replicating the output directory which has large files
+/output
+# these are the latex generated files
+*.aux
+*.bcf
+*.fdb_latexmk
+*.fls
+*.log
+*.run.xml
+*.synctex.gz
+# These are output type files
+*.pdf
+*.jpg
+*.rds
+*.Rdata
+*.csv
