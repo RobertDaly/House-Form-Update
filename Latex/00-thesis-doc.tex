@@ -226,24 +226,9 @@ Figure \ref{ExitbyWave} shows how the household formation rate varies by wave. T
   \includegraphics[width=0.75\textwidth]{../output/WaveRate.pdf}
 \end{figure}
 
-In Table \ref{rate1}, the modelled average age at exit by wave is shown. The average age at exit calculating directly from the data does not adjust for the likely exit age of those who are not observed to exit (right censored issue). As the first wave starts with no individuals aged over 25 omitting this adjustment is greater than for later waves where more older individuals will exist (ageing from previous waves). The modelled average age adjusts for this issue by estimating a survival function for the whole data set and using this to calculate average age for each wave using the proportional difference for each wave. This adjusted average age of exit shows an increasing overall trend in line with the declining rate of exit.
+In Table \ref{age-3-cols}, the modelled average age at exit by wave is shown. The average age at exit calculating directly from the data does not adjust for the likely exit age of those who are not observed to exit (right censored issue). As the first wave starts with no individuals aged over 25 omitting this adjustment is greater than for later waves where more older individuals will exist (ageing from previous waves). The modelled average age adjusts for this issue by estimating a survival function for the whole data set and using this to calculate average age for each wave using the proportional difference for each wave. This adjusted average age of exit shows an increasing overall trend in line with the declining rate of exit.
 
-\begin{table}[htpb]
-  \centering
-  \caption{Average Age for Leaving Home}
-  \label{rate1}
-\begin{tabular}{@{}cccccc@{}}
-\toprule
-Year & Average age & Year & Average age & Year & Average age\tabularnewline
-\midrule
-2001 & 21.9 & 2006 & 22.7 & 2011 & 22.9 \tabularnewline
-2002 & 22.0 & 2007 & 22.1 & 2012 & 23.2 \tabularnewline
-2003 & 21.9 & 2008 & 22.7 & 2013 & 23.4 \tabularnewline
-2004 & 21.8 & 2009 & 23.0 & 2014 & 23.6 \tabularnewline
-2005 & 22.1 & 2010 & 23.1 & 2015 & 23.2 \tabularnewline
-\bottomrule
-\end{tabular}
-\end{table}
+\input{../output/age-3-cols.tex}
 
 
 \subsection{Tenure Choice}
@@ -260,10 +245,12 @@ The RP dataset also provides listing or advertising data of asking rents that co
 
 In Table \ref{houseVar}, we show the average values and variation in these housing costs. Note that the between variation is across median values by region. There is considerably more variation between individual transactions and households which is not shown in this table.
 
+\input{../output/houseVar.tex}
+
 \begin{table}[htpb]
 \centering
 \caption{Variation in Housing Cost Measures}
-\label{houseVar}
+\label{houseVar1}
 \begin{tabular}{lrrrr}
 \toprule
 Housing Measure & Mean of & Variation & Across regions & Over time\tabularnewline

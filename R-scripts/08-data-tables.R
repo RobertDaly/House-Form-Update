@@ -136,6 +136,27 @@ neat_col_names <- function(col_names) {
   return(adj_names)
 }
 
+# create function to sanitize column names
+neat_col_names_1 <- function(col_names) {
+    # this strips off the last char from each column name
+    adj_names <- str_sub(col_names, 1, -2)
+    # apply above function also for completeness
+    return(neat_col_names(adj_names))
+}
+
+# convert waves into years
+yearFromWave <- function(x) {
+  # first convert x to a character
+  x <- as.character(x)
+  # and lapply the utf8toInt function to the character vector
+  y <- unlist(lapply(x, FUN = utf8ToInt))
+  # adjust to get to the year
+  y <- y - 96 + 2000
+  # make y an integer variable for later efficiency
+  y <- as.integer(y)
+  # then return the vector version of the resulting list
+  return(y)
+}
 
 # Summary HILDA table -----------------------------------------------------
 
@@ -171,7 +192,6 @@ HILDAsum <- xtable(HILDAsum,
   caption = "Summary of HILDA Data and Exit Rate",
   label = "HILDAsum", align = "lccrrrrr"
 )
-
 
 print(HILDAsum,
   type = "latex", file = paste0(out_path, "HILDAsum.tex"),
@@ -222,6 +242,28 @@ WaveAvgAge <- unlist(lapply(WaveFac, avgAgeFac, modWave))
 # now create a table with the different avgAges
 avgAgeWave <- tibble(wave = substr(names(WaveFac), 5, 5), modAvg = WaveAvgAge)
 
+# convert to three columns
+age_3_cols <- tibble(Year1 = yearFromWave(avgAgeWave$wave[1:5]), 
+                     Age1 = comma(avgAgeWave$modAvg[1:5], accuracy = 0.1),
+                     Year2 = yearFromWave(avgAgeWave$wave[6:10]), 
+                     Age2 = comma(avgAgeWave$modAvg[6:10], accuracy = 0.1),
+                     Year3 = yearFromWave(avgAgeWave$wave[11:15]), 
+                     Age3 = comma(avgAgeWave$modAvg[11:15], accuracy = 0.1))
+
+# now prepare for printing
+age_3_cols <- xtable(age_3_cols,
+                   caption = "Modelled Average Age for Leaving Home",
+                   label = "age-3-cols", align = "lcccccc"
+)
+
+print(age_3_cols,
+      type = "latex", file = paste0(out_path, "age-3-cols.tex"),
+      include.rownames = FALSE, caption.placement = "top",
+      sanitize.colnames.function = neat_col_names_1, 
+      booktabs = TRUE, table.placement = "htpb"
+)
+
+
 # Exit Rate by wave ----------------
 sumWave <- exposed %>%
   group_by(wave) %>%
@@ -271,14 +313,29 @@ houseVar <- bind_rows(
   calcVariation("HILDA Mortgages", housingData, HILDA_Mortg_median_real, hhsgcc)
 )
 
+# clean up the format before sending to print
+houseVar$mean <- comma(houseVar$mean)
+houseVar$total <- comma(houseVar$total)
+houseVar$between <- comma(houseVar$between)
+houseVar$within <- comma(houseVar$within)
+
+# update names for printing purposes
+names(houseVar) <- c("Housing Measure", "Mean of medians",
+                     "Variation in medians",
+                     "Across regions (between)", 
+                     "Over time (within)")
+
+
 houseVar <- xtable(houseVar,
   caption = "Variation in Housing Cost Measures",
-  label = "houseVar", align = "llrrrr", digits = 0
+  label = "houseVar", align = c("l", "p{4cm}", "p{2cm}","p{2cm}","p{2.5cm}","p{2cm}"), digits = 0
 )
 
 print(houseVar,
   type = "latex", file = paste0(out_path, "houseVar.tex"),
-  include.rownames = FALSE, caption.placement = "top"
+  include.rownames = FALSE, caption.placement = "top",
+  sanitize.colnames.function = neat_col_names, 
+  booktabs = TRUE, table.placement = "htpb"
 )
 
 houseLabs <- c("RP Prices", "HILDA Prices", "HILDA Rents", "HILDA Mortgages")
