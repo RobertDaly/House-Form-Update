@@ -228,7 +228,7 @@ Using this logic to calculate age, hazard rates are calculated for each age grou
   \caption{Leaving Home Hazard Rates by Age}
   \label{ExitbyAge}
   \centering
-  \includegraphics[width=0.8\textwidth]{RawHazard.pdf}
+  \includegraphics[width=0.8\textwidth]{../output/RawHazard.pdf}
 \end{figure}
 
 The exit rate follows a hump backed shape with exits increasing to age 27 and then decreasing overall for later ages. There are fewer individuals at these older ages which makes the estimates less precise. The fitting process produces a smooth survival curve (or survivorship function). Relatively few lives continue to be at home at age 30.
@@ -237,7 +237,7 @@ The exit rate follows a hump backed shape with exits increasing to age 27 and th
   \caption{Staying at Home Survival Function}
   \label{StaybyAge}
   \centering
-  \includegraphics[width=0.8\textwidth]{RawSurv.pdf}
+  \includegraphics[width=0.8\textwidth]{../output/RawSurv.pdf}
 \end{figure}
 
 From the survivorship function, the average age of exit is calculated using the method described in Section 3. Before adjusting for non-exits, this gives a modelled average age at exit of 21.1. This method assumes a different age mix (based on projecting the survival function) but is close to the survey result of 21.25. The adjustment for non-exits is to allow for those individuals aged 40 who have not exited (just under 2\%) who are treated as right censored in the hazard rate calculation. These individuals are assumed to exit at age 40 which underestimates the actual (unknown) age of exit. This adjustment results in 21.9 as the baseline modelled average age of exit across the full HILDA survey period.
@@ -250,7 +250,7 @@ Figure \ref{ExitbyWave} shows how the household formation rate varies by wave. T
   \caption{Household Formation by Hilda Wave}
   \label{ExitbyWave}
   \centering
-  \includegraphics[width=0.8\textwidth]{WaveRate.pdf}
+  \includegraphics[width=0.75\textwidth]{../output/WaveRate.pdf}
 \end{figure}
 
 In Table \ref{rate1}, the modelled average age at exit by wave is shown. The average age at exit calculating directly from the data does not adjust for the likely exit age of those who are not observed to exit (right censored issue). As the first wave starts with no individuals aged over 25 omitting this adjustment is greater than for later waves where more older individuals will exist (ageing from previous waves). The modelled average age adjusts for this issue by estimating a survival function for the whole data set and using this to calculate average age for each wave using the proportional difference for each wave. This adjusted average age of exit shows an increasing overall trend in line with the declining rate of exit.
@@ -516,7 +516,7 @@ Figure \ref{modSurv} shows the survival functions for the base model including t
    \caption{Modelled Survival Function}
    \label{modSurv}
    \centering
-   \includegraphics[width=0.8\textwidth]{ModSurv.pdf}
+   \includegraphics[width=0.8\textwidth]{../output/ModSurv.pdf}
  \end{figure}
 
 \begin{table}[htpb] \centering
@@ -905,7 +905,7 @@ Where $HP$ is the median house price, $-HP$ are the other variables, $\beta_{HP}
   \caption{Projected Survival Function}
   \label{plotSurv}
   \centering
-  \includegraphics[width=0.8\textwidth]{plotSurv.pdf}
+  \includegraphics[width=0.8\textwidth]{../output/plotSurv.pdf}
 \end{figure}
 
 The simulation is summarised using the model average age of leaving home (see Section 3 for a discussion of how this is calculated) and these are shown in Table \ref{ProgAvgAges}. A steadily increasing age of leaving home is projected if house prices continue to increase. In practice, the increase has not been so constant in the past.

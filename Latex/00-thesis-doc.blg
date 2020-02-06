@@ -1,0 +1,17 @@
+[0] Config.pm:304> INFO - This is Biber 2.14
+[0] Config.pm:307> INFO - Logfile is '00-thesis-doc.blg'
+[119] biber-darwin:322> INFO - === Thu Feb  6, 2020, 14:43:32
+[144] Biber.pm:415> INFO - Reading '00-thesis-doc.bcf'
+[285] Biber.pm:943> INFO - Found 16 citekeys in bib section 0
+[303] Biber.pm:4256> INFO - Processing section 0
+[303] Utils.pm:75> INFO - Globbing data source 'ThesisResearch.bib'
+[303] Utils.pm:91> INFO - Globbed data source 'ThesisResearch.bib' to ThesisResearch.bib
+[317] Biber.pm:4455> INFO - Looking for bibtex format file 'ThesisResearch.bib' for section 0
+[324] bibtex.pm:1653> INFO - LaTeX decoding ...
+[423] bibtex.pm:1471> INFO - Found BibTeX data source 'ThesisResearch.bib'
+[579] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[579] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[579] Biber.pm:4084> INFO - Sorting list 'nyt/global//global/global' of type 'entry' with template 'nyt' and locale 'en-US'
+[579] Biber.pm:4090> INFO - No sort tailoring available for locale 'en-US'
+[605] bbl.pm:652> INFO - Writing '00-thesis-doc.bbl' with encoding 'UTF-8'
+[620] bbl.pm:755> INFO - Output to 00-thesis-doc.bbl
