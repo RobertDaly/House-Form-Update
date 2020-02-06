@@ -7,6 +7,7 @@
 *.fls
 *.log
 *.blg
+*.bbl
 *.run.xml
 *.synctex.gz
 # These are output type files
