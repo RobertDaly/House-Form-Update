@@ -122,6 +122,21 @@ avgAgeFac <- function(multFac, coxFit) {
   return(avg)
 }
 
+# neat percentage formating
+percent_1 <- label_percent(accuracy = 0.1)
+
+# create function to sanitize column names
+neat_col_names <- function(col_names) {
+  # first replace underscores with spaces
+  adj_names <- gsub("_", " ", col_names, fixed = TRUE)
+  # then capitalise each word
+  adj_names <- tools::toTitleCase(adj_names)
+  # do the standard santization in any event
+  adj_names = xtable::sanitize(adj_names)
+  return(adj_names)
+}
+
+
 # Summary HILDA table -----------------------------------------------------
 
 # number of households in latest wave
@@ -129,7 +144,7 @@ nrow(combMast %>% filter(wave == "p") %>% select(hhrhid) %>% distinct())
 
 # add household count
 combWave <- do(
-  group_by(combMast, wave),
+  group_by(combMast, wave, Year),
   tibble(
     Households = length(unique(.$hhrhid)),
     Individuals = nrow(.)
@@ -139,8 +154,8 @@ combWave <- do(
 riskSet <- do(
   group_by(exposed, wave),
   tibble(
-    Risk.set = nrow(.), exits = sum(.$event == 1),
-    exitRate = exits / Risk.set
+    Risk_Set = nrow(.), exits = sum(.$event == 1),
+    Exit_Rate = exits / Risk_Set
   )
 )
 
@@ -148,21 +163,21 @@ HILDAsum <- left_join(combWave, riskSet, by = "wave")
 
 HILDAsum$Households <- comma(HILDAsum$Households)
 HILDAsum$Individuals <- comma(HILDAsum$Individuals)
-HILDAsum$Risk.set <- comma(HILDAsum$Risk.set)
+HILDAsum$Risk_Set <- comma(HILDAsum$Risk_Set)
 HILDAsum$exits <- comma(HILDAsum$exits)
-HILDAsum$exitRate <- paste(format(HILDAsum$exitRate * 100, digits = 1, nsmall = 1),
-  "%",
-  sep = ""
-)
+HILDAsum$Exit_Rate <- percent_1(HILDAsum$Exit_Rate)
 
 HILDAsum <- xtable(HILDAsum,
-  caption = "Summary of HILDA data",
-  label = "HILDAsum", align = "lrrrrrr"
+  caption = "Summary of HILDA Data and Exit Rate",
+  label = "HILDAsum", align = "lccrrrrr"
 )
+
 
 print(HILDAsum,
   type = "latex", file = paste0(out_path, "HILDAsum.tex"),
-  include.rownames = FALSE, caption.placement = "top"
+  include.rownames = FALSE, caption.placement = "top",
+  sanitize.colnames.function = neat_col_names, 
+  booktabs = TRUE, table.placement = "htpb"
 )
 
 # Avg Hazard Rates and Survival -------------------------------------------
