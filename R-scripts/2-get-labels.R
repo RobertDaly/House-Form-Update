@@ -4,7 +4,7 @@ library(haven)
 
 # store the path name
 path_name <- "~/Data/HILDA/STATA 160c/"
-out_path <- "../00-Output/"
+out_path <- "../output/"
 
 strip_first_char <- function(x) {
   substr(x, 2, nchar(x))

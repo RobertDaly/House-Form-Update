@@ -10,7 +10,7 @@ library(lubridate)
 library(tidyverse)
 
 # store the path name
-out_path <- "../00-Output/"
+out_path <- "../output/"
 abs_path <- "~/Documents/MasterEconAnalysis/Thesis/ABS Data/"
 #------------------------------------------------------------------------------
 # First read in employment data

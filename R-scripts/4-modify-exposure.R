@@ -6,7 +6,7 @@ library(tidyverse)
 library(openxlsx)
 
 # store the path name
-out_path <- "../00-Output/"
+out_path <- "../output/"
 
 # first read in the combined master file for HILDA
 exposed <- read_rds(path = paste0(out_path, "exposure-01.rds"))

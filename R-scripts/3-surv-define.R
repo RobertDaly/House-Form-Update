@@ -7,7 +7,7 @@ library(survival)
 library(tidyverse)
 
 # store the path name
-out_path <- "../00-Output/"
+out_path <- "../output/"
 
 #----This code prepares the data file -----------------------------------------
 # load the data file

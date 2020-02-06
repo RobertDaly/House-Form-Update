@@ -6,7 +6,7 @@
 # Load the packages
 library(tidyverse)
 
-out_path <- "../00-Output/"
+out_path <- "../output/"
 rp_path <- "~/Data/RP Data/"
 
 #--------Read in RP Sales Data and prepare ------------------------------------

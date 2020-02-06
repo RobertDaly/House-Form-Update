@@ -96,7 +96,7 @@ read_HILDA_waves <- function(wave_ids, ...) { # the variables from this function
 # -----------------------------------------------------------------------------
 # store the path name
 path_name <- "~/Data/HILDA/STATA 160c/"
-out_path <- "../00-Output/"
+out_path <- "../output/"
 
 # a list of all the waves
 waves <- unlist(lapply(X = seq(1, 16) + 96, FUN = intToUtf8))

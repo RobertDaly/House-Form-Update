@@ -14,3 +14,7 @@
 *.rds
 *.Rdata
 *.csv
+# These are R project files that don't need to be replicated.
+/R-scripts/.Rproj.user
+/R-scripts/.Rhistory
+

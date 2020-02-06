@@ -6,7 +6,7 @@
 #----load libraries -----------------------------------------------------------
 library(tidyverse)
 
-out_path <- "../00-Output/"
+out_path <- "../output/"
 
 # read in the data file
 HILDA <- read_rds(path = paste0(out_path, "combined-master.rds"))

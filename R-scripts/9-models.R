@@ -11,8 +11,7 @@ library(coxme)
 library(lmtest)
 
 # store the path name
-out_path <- "../00-Output/"
-model_path <- "../00-thesis/"
+out_path <- "../output/"
 
 # read in the exposure data
 exposed <- read_rds(paste0(out_path, "exposure-05.rds"))
@@ -117,7 +116,7 @@ covLabel1 <- c(
 
 stargazer(mod01, mod02, mod03,
   type = "text", style = "aer",
-  out = paste0(model_path, "mainRes.tex"),
+  out = paste0(out_path, "mainRes.tex"),
   dep.var.labels = NULL,
   column.labels = c(
     "Basic model", "Plus HILDA covariates",
@@ -143,7 +142,7 @@ plot(SurvModPlot)
 # now save the plots to be used by latex for thesis
 ggsave("ModSurv.pdf",
   plot = SurvModPlot, device = "pdf", width = 14, height = 9,
-  units = "cm", path = model_path
+  units = "cm", path = out_path
 )
 
 # table of age adjustments ------------------------------------------------
@@ -162,7 +161,7 @@ AvgAge <- xtable(ageAdj,
 )
 
 print(AvgAge,
-  type = "latex", file = paste0(model_path, "AvgAge.tex"),
+  type = "latex", file = paste0(out_path, "AvgAge.tex"),
   include.rownames = FALSE, tabular.environment = "threeparttable"
 )
 
@@ -182,7 +181,7 @@ covLabel2 <- c(covLabel1, c("Log mortgage costs", "Log rent costs"))
 
 stargazer(mod03, mod04, mod05, mod06,
   type = "text", style = "aer",
-  out = paste0(model_path, "HC_Table.tex"),
+  out = paste0(out_path, "HC_Table.tex"),
   column.labels = c(
     "House prices", "Mortgage costs", "Rental costs",
     "All housing costs"
@@ -229,7 +228,7 @@ mod5.3 <- coxph(Surv(entry, exit, event) ~ gender + sibCat2 + parOwnCat + uneRat
 
 stargazer(mod05, mod5.1, mod5.2, mod5.3,
   type = "text", style = "aer",
-  out = paste0(model_path, "ModOwner.tex"),
+  out = paste0(out_path, "ModOwner.tex"),
   column.labels = c("", "Exit to Rental", "Exit to Owned", "Unknowns"),
   covariate.labels = c(head(covLabel1, -1), "Log Rent Costs"),
   column.sep.width = "1pt",
@@ -328,7 +327,7 @@ random <- xtable(random,
 )
 
 print(random,
-  type = "latex", file = paste0(model_path, "random.tex"),
+  type = "latex", file = paste0(out_path, "random.tex"),
   include.rownames = FALSE
 )
 
@@ -386,7 +385,7 @@ ModLoc <- xtable(ModLoc,
 )
 
 print(ModLoc,
-  type = "latex", file = paste0(model_path, "ModLoc.tex"),
+  type = "latex", file = paste0(out_path, "ModLoc.tex"),
   include.rownames = FALSE
 )
 
@@ -399,7 +398,7 @@ mod10 <- coxph(Surv(entry, exit, event) ~ gender + sibCat2 + parOwnCat
 covEmp <- c("Employed PT", "Unemployed", "NILF attached", "NILF", "No Emp. data")
 
 stargazer(mod03, mod10,
-  type = "text", style = "aer", out = paste0(model_path, "ResTable3.tex"),
+  type = "text", style = "aer", out = paste0(out_path, "ResTable3.tex"),
   column.labels = c("Main model", "Employment"),
   dep.var.labels = "Employment and Leaving Home",
   covariate.labels = c(covLabel1, covEmp),
@@ -420,7 +419,7 @@ covEduEmp <- c(
 
 stargazer(mod03, mod11,
   type = "text", style = "aer",
-  out = paste0(model_path, "empEdu.tex"),
+  out = paste0(out_path, "empEdu.tex"),
   column.labels = c("Main model", "Employment"),
   dep.var.labels = "Employment and Leaving Home",
   covariate.labels = c(covLabel1, covEduEmp),
@@ -440,7 +439,7 @@ covMarried <- c("Has partner", "Status not known")
 
 stargazer(mod03, mod12,
   type = "text", style = "aer",
-  out = paste0(model_path, "married.tex"),
+  out = paste0(out_path, "married.tex"),
   column.labels = c("Main model", "Marital Status"),
   covariate.labels = c(covLabel1, covMarried),
   column.sep.width = "1pt",
@@ -486,7 +485,7 @@ mod15 <- coxph(Surv(entry, exit, event) ~ gender + sibCat2 + parOwnCat + uneRate
 
 stargazer(mod03, mod13, mod14, mod15,
   type = "text", style = "aer",
-  out = paste0(model_path, "sepMarry.tex"),
+  out = paste0(out_path, "sepMarry.tex"),
   column.labels = c("Main model", "Single Exits", "Married Exits", "Unknowns"),
   covariate.labels = c(covLabel1),
   column.sep.width = "1pt",
@@ -502,7 +501,7 @@ mod16 <- coxph(Surv(entry, exit, event) ~ gender + sibCat2 + parOwnCat + uneRate
   + log(tifdip_real) + log(famInc_real), data = exposed)
 
 stargazer(mod03, mod16,
-  type = "text", style = "aer", out = paste0(model_path, "ResTable8.tex"),
+  type = "text", style = "aer", out = paste0(out_path, "ResTable8.tex"),
   column.labels = c("Main model", "Income measures"),
   covariate.labels = covLabel1,
   column.sep.width = "1pt",
@@ -537,7 +536,7 @@ survPlot <- ggplot(data = Survs, mapping = aes(x = time)) +
 plot(survPlot)
 
 stargazer(mod03, mod17,
-  type = "text", style = "aer", out = paste0(model_path, "ResTable9.tex"),
+  type = "text", style = "aer", out = paste0(out_path, "ResTable9.tex"),
   column.labels = c("Main model", "all in model"),
   covariate.labels = covLabel1,
   column.sep.width = "1pt",
@@ -551,7 +550,7 @@ mod18 <- coxph(Surv(entry, exit, event) ~ gender + sibCat2 + parOwnCat + uneRate
   + mortgRate + log(RP_HousePrice_LQmed_real), data = exposed)
 
 stargazer(mod03, mod18,
-  type = "text", style = "aer", out = paste0(model_path, "ResTable10.tex"),
+  type = "text", style = "aer", out = paste0(out_path, "ResTable10.tex"),
   column.labels = c("All in model", "Lower Quartile"),
   covariate.labels = c(covLabel1),
   column.sep.width = "1pt",
@@ -666,7 +665,7 @@ plot(plotSurv)
 
 ggsave("plotSurv.pdf",
   plot = plotSurv, device = "pdf", width = 14, height = 9,
-  units = "cm", path = model_path
+  units = "cm", path = out_path
 )
 
 ProgAvgAges <- bind_rows(
@@ -688,6 +687,6 @@ ProgAvgAges <- xtable(ProgAvgAges,
 )
 
 print(ProgAvgAges,
-  type = "latex", file = paste0(model_path, "ProgAvgAges.tex"),
+  type = "latex", file = paste0(out_path, "ProgAvgAges.tex"),
   include.rownames = FALSE
 )

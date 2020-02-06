@@ -8,7 +8,7 @@
 library(tidyverse)
 library(openxlsx)
 
-out_path <- "../00-Output/"
+out_path <- "../output/"
 rp_path <- "~/Data/RP Data/"
 abs_path <- "~/Documents/MasterEconAnalysis/Thesis/ABS Data/"
 
@@ -44,7 +44,7 @@ specCol <- cols(
 # first read in the sales data
 RpSales <- read_delim(
   file = paste0(rp_path, "Sales.csv"), delim = "^",
-  col_names = salesNames, col_types = salesCol
+  col_names = salesNames, col_types = specCol
 )
 
 # selects columns and removes duplicates

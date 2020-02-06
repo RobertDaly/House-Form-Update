@@ -12,7 +12,7 @@ library(haven)
 #-------------------------------------------------------------------------------------
 # store the path name
 path_name <- "~/Data/HILDA/STATA 160c/"
-out_path <- "../00-Output/"
+out_path <- "../output/"
 
 master_data <- read_stata(file = paste0(path_name, "Master_p160c.dta"))
 
