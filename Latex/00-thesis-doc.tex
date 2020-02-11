@@ -12,7 +12,6 @@
 \onehalfspacing
 %\doublespacing
 
-\usepackage{threeparttable}
 
 \usepackage[small]{titlesec}
 
@@ -24,6 +23,8 @@
 
 % for table formating
 \usepackage{booktabs}
+\usepackage{array}
+\usepackage{threeparttable}
 
 % set up biblatex and package
 \usepackage[style=apa, doi=false, isbn=false, url=false,  sorting=nyt, backend=biber, maxbibnames=99]{biblatex}
@@ -892,7 +893,7 @@ Year & Average age & House Price \\
 
 \end{table}
 
-Note that the above averages differ from those shown earlier (see Table \ref{rate1}) as this earlier model is based on all data and only wave variation while this model is separate for each year and uses more covariates and hence a different calculation approach.
+Note that the above averages differ from those shown earlier (see Table \ref{age-3-cols}) as this earlier model is based on all data and only wave variation while this model is separate for each year and uses more covariates and hence a different calculation approach.
 
 \section{Conclusion}
 

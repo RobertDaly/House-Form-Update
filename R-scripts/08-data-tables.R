@@ -253,7 +253,7 @@ age_3_cols <- tibble(Year1 = yearFromWave(avgAgeWave$wave[1:5]),
 # now prepare for printing
 age_3_cols <- xtable(age_3_cols,
                    caption = "Modelled Average Age for Leaving Home",
-                   label = "age-3-cols", align = "lcccccc"
+                   label = "age-3-cols", align = c("l", rep("p{1.3cm}", 6))
 )
 
 print(age_3_cols,
