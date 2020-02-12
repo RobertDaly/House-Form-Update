@@ -144,6 +144,32 @@ neat_col_names_1 <- function(col_names) {
     return(neat_col_names(adj_names))
 }
 
+# create function to wrap and center column names
+center_col_names <- function(col_names) {
+  # pull out the width - it should be at the start surrounded by 
+  # curly braces
+  locations <- regexpr("}", col_names)
+  # throw an error if any are -1
+  if (any(locations == -1)) {
+    stop("Column heading must have width at start as {width}")
+  }
+  # column heading then strips the width part
+  adj_names <- substring(col_names, locations + 1)
+  # now figure our the widths
+  widths <- substring(col_names, 1, locations)
+  # throw an error if any do not start with {
+  if (any(substring(widths,1,1) != "{")) { 
+    stop("Column heading must have width at start as {width}")
+  }
+  # next replace underscores with spaces
+  adj_names <- gsub("_", " ", adj_names, fixed = TRUE)
+  # then capitalise each word
+  adj_names <- tools::toTitleCase(adj_names)
+  
+  adj_names = paste0("\\parbox[t]",widths,"{\\centering ", adj_names, "}")
+  return(adj_names)
+}
+
 # convert waves into years
 yearFromWave <- function(x) {
   # first convert x to a character
@@ -320,21 +346,21 @@ houseVar$between <- comma(houseVar$between)
 houseVar$within <- comma(houseVar$within)
 
 # update names for printing purposes
-names(houseVar) <- c("Housing Measure", "Mean of medians",
-                     "Variation in medians",
-                     "Across regions (between)", 
-                     "Over time (within)")
+names(houseVar) <- c("{4cm}Housing Measure", "{2cm}Mean of medians",
+                     "{2cm}Variation in medians",
+                     "{2.5cm}Across regions (between)", 
+                     "{2cm}Over time (within)")
 
 
 houseVar <- xtable(houseVar,
   caption = "Variation in Housing Cost Measures",
-  label = "houseVar", align = c("l", "p{4cm}", "p{2cm}","p{2cm}","p{2.5cm}","p{2cm}"), digits = 0
+  label = "houseVar", align = c("l", "l", rep("r",4)), digits = 0
 )
 
 print(houseVar,
   type = "latex", file = paste0(out_path, "houseVar.tex"),
   include.rownames = FALSE, caption.placement = "top",
-  sanitize.colnames.function = neat_col_names, 
+  sanitize.colnames.function = center_col_names, 
   booktabs = TRUE, table.placement = "htpb"
 )
 
