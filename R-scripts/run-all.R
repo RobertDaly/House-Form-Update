@@ -76,7 +76,7 @@ source("07-add-HILDA-prices.R")
 toc()
 
 rm(list = ls())
-# now prepare data table for thesis
+# now produce tables for thesis
 tic("Thesis data")
 source("08-data-tables.R")
 toc()

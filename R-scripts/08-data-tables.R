@@ -161,12 +161,28 @@ center_col_names <- function(col_names) {
   if (any(substring(widths,1,1) != "{")) { 
     stop("Column heading must have width at start as {width}")
   }
+  # now drop the brackets
+  widths <- substring(widths, 2, locations -1)
   # next replace underscores with spaces
   adj_names <- gsub("_", " ", adj_names, fixed = TRUE)
   # then capitalise each word
   adj_names <- tools::toTitleCase(adj_names)
   
-  adj_names = paste0("\\parbox[t]",widths,"{\\centering ", adj_names, "}")
+  adj_names = paste0("\\parbox[t]{",widths,"\\textwidth}{\\centering ", adj_names, "}")
+  return(adj_names)
+}
+# this function cleans row names but does not use the width
+# it is a companion of above function for matrices
+no_width_row_names <- function(col_names) {
+  # pull out the width - it should be at the start surrounded by 
+  # curly braces
+  locations <- regexpr("}", col_names)
+  # column heading then strips the width part
+  adj_names <- substring(col_names, locations + 1)
+  # next replace underscores with spaces
+  adj_names <- gsub("_", " ", adj_names, fixed = TRUE)
+  # then capitalise each word
+  adj_names <- tools::toTitleCase(adj_names)
   return(adj_names)
 }
 
@@ -346,10 +362,10 @@ houseVar$between <- comma(houseVar$between)
 houseVar$within <- comma(houseVar$within)
 
 # update names for printing purposes
-names(houseVar) <- c("{4cm}Housing Measure", "{2cm}Mean of medians",
-                     "{2cm}Variation in medians",
-                     "{2.5cm}Across regions (between)", 
-                     "{2cm}Over time (within)")
+names(houseVar) <- c("{0.25}Housing Measure", "{0.12}Mean of medians",
+                     "{0.12}Variation in medians",
+                     "{0.16}Across regions (between)", 
+                     "{0.12}Over time (within)")
 
 
 houseVar <- xtable(houseVar,
@@ -364,7 +380,8 @@ print(houseVar,
   booktabs = TRUE, table.placement = "htpb"
 )
 
-houseLabs <- c("RP Prices", "HILDA Prices", "HILDA Rents", "HILDA Mortgages")
+houseLabs <- c("{0.14}RP_House_Prices", "{0.14}HILDA_Prices", "{0.14}HILDA_Rents",
+               "{0.14}HILDA_Mortgages")
 houseCor <- cor(housingData %>% select(houseVars), method = "pearson")
 # add labels
 attr(houseCor, "dimnames") <- list(houseLabs, houseLabs)
@@ -378,7 +395,10 @@ houseCor <- xtable(houseCor,
 
 print(houseCor,
   type = "latex", file = paste0(out_path, "houseCor.tex"),
-  include.rownames = TRUE, caption.placement = "top"
+  include.rownames = TRUE, caption.placement = "top", 
+  sanitize.colnames.function = center_col_names, 
+  sanitize.rownames.function = no_width_row_names,
+  booktabs = TRUE, table.placement = "htpb"
 )
 
 
@@ -398,50 +418,57 @@ parOwnTab <- exposed %>%
 HILDATab <- bind_rows(
   tibble(
     Description = c(
-      names(genderTab)[1],
+      "Gender",
       rep("", nrow(genderTab))
     ),
     Category = c(as.character(genderTab$gender), "Total"),
     Percentage = c(unlist(genderTab[, 2]), sum(genderTab[, 2]))
   ),
+  tibble(Description="", Category = "", Percentage = NA),
   tibble(
     Description = c(
-      names(sibTab)[1],
+      "Sibling Count",
       rep("", nrow(sibTab))
     ),
     Category = c(as.character(sibTab$sibCat2), "Total"),
     Percentage = c(unlist(sibTab[, 2]), sum(sibTab[, 2]))
   ),
+  tibble(Description="", Category = "", Percentage = NA),
   tibble(
     Description = c(
-      names(parOwnTab)[1],
+      "Whether Parents Own",
       rep(" ", nrow(parOwnTab))
     ),
     Category = c(as.character(parOwnTab$parOwnCat), "Total"),
     Percentage = c(unlist(parOwnTab[, 2]), sum(parOwnTab[, 2]))
   )
 )
-HILDATab$Percentage <- paste(format(100 * HILDATab$Percentage, digits = 1, nsmall = 1),
-  "%",
-  sep = ""
-)
+HILDATab$Percentage <- percent_1(HILDATab$Percentage)
+
+# update names for printing
+names(HILDATab) = c("{0.3}Description", "{0.13}Category", 
+                    "{0.15}Percentage_in_risk_set")
 
 HILDATab <- xtable(HILDATab,
-  caption = "Summary of HILDA Co-Variates",
+  caption = "Summary of Household and Individual Data",
   label = "HILDATab", align = "lllr"
 )
 
 print(HILDATab,
   type = "latex", file = paste0(out_path, "HILDATab.tex"),
-  include.rownames = FALSE, caption.placement = "top"
+  include.rownames = FALSE, caption.placement = "top",
+  sanitize.colnames.function = center_col_names, 
+  booktabs = TRUE, table.placement = "htpb"
 )
 
 # Employment and education category ---------
 
-
 empEduTab <- exposed %>%
-  group_by(marriedCat2) %>%
+  group_by(eduEmpCat) %>%
   summarise(Percentage = n() / nrow(exposed))
+
+# sort by percentage
+empEduTab <- empEduTab[order(empEduTab$Percentage,decreasing = TRUE),]
 
 # add a total
 empEduTab <- bind_rows(
@@ -454,19 +481,37 @@ empEduTab <- bind_rows(
   )
 )
 
-empEduTab$Percentage <- paste(format(100 * empEduTab$Percentage, digits = 1, nsmall = 1),
-  "%",
-  sep = ""
+empEduTab$Percentage <- percent_1(empEduTab$Percentage)
+
+# create some nice descriptions
+emp_edu_desc = tibble(
+  eduEmpCat = c("School", "CollegeFTNoWork", "CollegeFTWork",
+                "CollegePT", "NILF", "NoResp", "UNE", "WorkFT", "WorkPT" ),
+  Category = c("School", "College Not Working", "College and Working",
+               "College Part Time", "Neither in Education nor Labour Force",
+               "No Response", "Unemployed", "Working Full Time",
+               "Working Part Time")
 )
+
+# map in the names
+empEduTab <- left_join(empEduTab, emp_edu_desc, by = "eduEmpCat")
+# and strip the first one
+empEduTab <- empEduTab[,c(3,2)]
+
+# update names for printing
+names(empEduTab) = c("{0.3}Category", 
+                    "{0.2}Percentage_in_risk_set")
 
 empEduTab <- xtable(empEduTab,
   caption = "Employment and Education Categories",
-  label = "empEduTab", align = "llrr"
+  label = "empEduTab", align = "llr"
 )
 
 print(empEduTab,
   type = "latex", file = paste0(out_path, "empEduTab.tex"),
-  include.rownames = FALSE, caption.placement = "top"
+  include.rownames = FALSE, caption.placement = "top",
+  sanitize.colnames.function = center_col_names, 
+  booktabs = TRUE, table.placement = "htpb"
 )
 
 # Partner category ---------
@@ -495,15 +540,13 @@ marriedTab <- bind_rows(
   )
 )
 
-marriedTab$PercRiskSet <- paste(format(100 * marriedTab$PercRiskSet,
-  digits = 1,
-  nsmall = 1
-), "%", sep = "")
+marriedTab$PercRiskSet <- percent_1(marriedTab$PercRiskSet)
+marriedTab$PercExit <- percent_1(marriedTab$PercExit)
 
-marriedTab$PercExit <- paste(format(100 * marriedTab$PercExit,
-  digits = 1,
-  nsmall = 1
-), "%", sep = "")
+# update names for printing
+names(marriedTab) = c("{0.15}Status", 
+                     "{0.15}Percentage_in_risk_set",
+                     "{0.15}Percentage_in_Exits")
 
 marriedTab <- xtable(marriedTab,
   caption = "Whether Partnered",
@@ -512,5 +555,7 @@ marriedTab <- xtable(marriedTab,
 
 print(marriedTab,
   type = "latex", file = paste0(out_path, "marriedTab.tex"),
-  include.rownames = FALSE, caption.placement = "top"
+  include.rownames = FALSE, caption.placement = "top",
+  sanitize.colnames.function = center_col_names, 
+  booktabs = TRUE, table.placement = "htpb"
 )

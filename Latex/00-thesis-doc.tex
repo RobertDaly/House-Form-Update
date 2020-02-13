@@ -231,7 +231,6 @@ In Table \ref{age-3-cols}, the modelled average age at exit by wave is shown. Th
 
 \input{../output/age-3-cols.tex}
 
-
 \subsection{Tenure Choice}
 The HILDA dataset shows whether a household owns or rents their property. Prior to forming independent households, only 20\% of leavers are in households that rent.  On leaving home, 83\% of exits move into a household that rents (where the tenure choice is known). This ratio has not varied significantly by wave with no clear trend in the data. The ratio does vary by age with fewer at young ages moving into owned housing, although this increases to a peak in their late 20s.
 
@@ -252,21 +251,7 @@ The HILDA own estimates of house prices appear to overstate actual transaction v
 
 Table \ref{houseCor} below shows the correlation between these measures. This shows that the two alternative price measures are closely correlated. Rental and mortgage costs are also largely correlated with house prices and each other.
 
-\begin{table}[htpb] \centering
-  \caption{Correlation of Housing Cost Measures}
-  \label{houseCor}
-\begin{tabular}{@{}lrrrr@{}}
-\toprule
- & RP House & HILDA & HILDA & HILDA \tabularnewline
- & Prices & House Prices & Rents & Mortgages \tabularnewline
-\midrule
-RP Prices & 1.000 & 0.969 & 0.832 & 0.843 \\
-  HILDA Prices & 0.969 & 1.000 & 0.807 & 0.872 \\
-  HILDA Rents & 0.832 & 0.807 & 1.000 & 0.822 \\
-  HILDA Mortgages & 0.843 & 0.872 & 0.822 & 1.000 \\
-\bottomrule
-\end{tabular}
-\end{table}
+\input{../output/houseCor.tex}
 
 \subsection{Economic Measures}
 
@@ -284,79 +269,17 @@ Mortgage rates are obtained from RBA data sources (series F05, `Lending rates; H
 
 The main model includes controls for the following household and individual factors found in the HILDA survey: gender, number of siblings and whether parents own or rent.  Other controls were considered but were found either not to have an impact on the decision to leave home or to not show sufficient variation. The data for numbers of siblings is grouped for all those with 2 or more siblings as little variation occurred with more siblings. The proportions in each group are shown in Table \ref{HILDATab}.
 
-\begin{table}[htpb]
-\centering
-\caption{Summary of Household and Individual Data}
-\label{HILDATab}
-\begin{tabular}{llr}
-\toprule
-Description & Category & Percentage \\
-&& in Risk Set \\
-\midrule
-Gender & Female &  46.3\% \\
-   & Male &  53.7\% \\
-   & Total & 100.0\% \\
-\midrule
-Sibling Count & 1 sibling &  30.9\% \\
-   & 2+ siblings &  55.7\% \\
-   & No siblings &   5.1\% \\
-   & No data &   8.4\% \\
-   & Total & 100.0\% \\
-\midrule
-Whether Parents Own & Own &  80.5\% \\
-    & Rent &  19.5\% \\
-    & Total & 100.0\% \\
-\bottomrule
-\end{tabular}
-\end{table}
+\input{../output/HILDATab.tex}
 
 \subsection{Education, Employment and Marital Status}
 
 The HILDA data provides information on education status of each responding individual and also on labour force status (e.g. whether employed). These fields are closely related as for instance those in education (particularly those in school) are less likely to be working full time. For this reason, the two status are considered together and the following categories are derived (Table \ref{empEduTab}).
 
-\begin{table}[htpb]
-\centering
-\caption{Employment and Education Categories}
-\label{empEduTab}
-\begin{tabular}{lr}
-\toprule
-Category & Percentage \\
-& in Risk Set \\
-\midrule
-School &  38.9\% \\
-  Working Full Time &  16.0\% \\
-  College and Working &  11.0\% \\
-  Working Part Time &   9.3\% \\
-  No Response &   7.6\% \\
-  College Part Time &   5.1\% \\
-  College Not Working &   4.3\% \\
-  Neither in education & \\
-  nor labour force &   4.2\% \\
-  Unemployed &   3.6\% \\
-  Total & 100.0\% \\
-\bottomrule
-\end{tabular}
-\end{table}
+\input{../output/empEduTab.tex}
 
 Whether a person is married or partnered could also effect the decision to leave home. Table \ref{marriedTab} sets out the proportion married in the risk set and among exits. The proportion partnered remains a minority on exit; however there is likely to be a strong link between forming a domestic partnership and leaving home which is considered in the modelling section.
 
-\begin{table}[htpb]
-\centering
-\caption{Whether Partnered}
-\label{marriedTab}
-\begin{tabular}{lrr}
-\toprule
-Status & Percentage in & Percentage \\
- & Risk Set & in Exits \\
-\midrule
-No Partner &  83.6\% &  48.2\% \\
-  Unknown &  11.0\% &  27.7\% \\
-  Partnered &   5.4\% &  24.1\% \\
-  Total & 100.0\% & 100.0\% \\
-\bottomrule
-\end{tabular}
-\end{table}
-
+\input{../output/marriedTab.tex}
 
 \section{Econometric Model}
 
@@ -397,12 +320,14 @@ Note that $t_K$ is the last time an exit occurs and the remaining individuals ar
 \subsection{Base Model}
 The proportional impact on the hazard rate of leaving home when housing prices change are shown in Table \ref{mainRes}. Several models are presented, first with no co-variates other than house prices, secondly with household and individual controls that are unlikely to be jointly determined with leaving home and then with economic controls.
 
+\input{../output/main-res.tex}
+
 % Table created by stargazer v.5.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
 % Date and time: Tue, Apr 03, 2018 - 17:49:50
 \begin{table}[htpb] \centering
   \begin{threeparttable}
   \caption{Household Formation Models}
-  \label{mainRes}
+ % \label{mainRes}
   \tabularnewline
 \begin{tabular}{@{\extracolsep{1pt}}lcccc}
 \toprule

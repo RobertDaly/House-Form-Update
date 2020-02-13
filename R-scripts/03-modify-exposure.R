@@ -265,7 +265,7 @@ exposed$marriedCat2 <- factor(
   x = exposed$mrcurrNxt, exclude = NULL,
   levels = c(6, seq(1, 4, 1), -10, NA),
   labels = c(
-    "NoPartner", rep("Partnered", 4),
+    "No_Partner", rep("Partnered", 4),
     "Unknown", "Unknown"
   )
 )
