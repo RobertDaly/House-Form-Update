@@ -94,6 +94,115 @@ avgAgeMod <- function(coxFit, fitdata = exposed) {
   return(avg)
 }
 
+# this function converts the stargazer latex to update formating
+adj_latex_table <- function(latex, column_labels, widths) {
+  # first change to the three part table format
+  # the insert points are after the table float starts and after the tabular ends.
+  # Also may need to remove any existing notes
+  begin_table <- grep("begin.table", latex)
+  end_tabular <- grep("end.tabular", latex)
+  adj_latex <- c(
+    latex[1:begin_table],
+    "  \\begin{threeparttable}",
+    latex[(begin_table + 1):end_tabular],
+    "  \\begin{tablenotes}[flushleft]",
+    "  \\item $^{***}$Significant at 1\\%; $^{**}$Significant at 5\\%; $^{*}$Significant at 10\\%.",
+    "  \\end{tablenotes}",
+    "  \\end{threeparttable}",
+    latex[(end_tabular + 1):length(latex)]
+  )
+
+  # find the notes and clear out if there
+  begin_notes <- grep("Notes:", adj_latex)
+  if (length(begin_notes) == 1) {
+    adj_latex <- c(
+      adj_latex[1:(begin_notes - 1)],
+      adj_latex[(begin_notes + 3):length(adj_latex)]
+    )
+  }
+
+  # now use new blank rows
+  no_cols <- length(widths)
+  blank_row <- paste(c(rep(" &", no_cols - 1), " \\\\"), sep = "", collapse = "")
+  blank_rows <- grep(blank_row, adj_latex)
+  adj_latex[blank_rows] <- "\\addlinespace[0.5em]"
+
+  # now put in toprule, mid rule and end rule
+  rules <- grep("hline", adj_latex)
+  # only do this if there are four
+  if (length(rules) == 4) {
+    adj_latex[rules[1]] <- "\\toprule"
+    adj_latex[rules[3]] <- "\\midrule"
+    adj_latex[rules[4]] <- "\\bottomrule"
+
+    # we have also located the header so this next gets dealt with
+    # create the new header row
+    headings <- paste0("\\parbox[t]{",widths,"\\textwidth}{\\centering ", column_labels, "}")
+    headings <- paste(headings, sep = "", collapse = " & ")
+    headings <- paste0(headings, " \\\\")
+    adj_latex[rules[2]] <- headings
+    
+    # now clean out some lines
+    adj_latex <- c(adj_latex[1:rules[2]], adj_latex[rules[3]:length(adj_latex)])
+  }
+
+  return(adj_latex)
+}
+
+# create function to wrap and center column names
+center_col_names <- function(col_names) {
+  # pull out the width - it should be at the start surrounded by 
+  # curly braces
+  locations <- regexpr("}", col_names)
+  # throw an error if any are -1
+  if (any(locations == -1)) {
+    stop("Column heading must have width at start as {width}")
+  }
+  # column heading then strips the width part
+  adj_names <- substring(col_names, locations + 1)
+  # now figure our the widths
+  widths <- substring(col_names, 1, locations)
+  # throw an error if any do not start with {
+  if (any(substring(widths,1,1) != "{")) { 
+    stop("Column heading must have width at start as {width}")
+  }
+  # now drop the brackets
+  widths <- substring(widths, 2, locations -1)
+  # next replace underscores with spaces
+  adj_names <- gsub("_", " ", adj_names, fixed = TRUE)
+  # then capitalise each word
+  adj_names <- tools::toTitleCase(adj_names)
+  
+  adj_names = paste0("\\parbox[t]{",widths,"\\textwidth}{\\centering ", adj_names, "}")
+  return(adj_names)
+}
+
+# rountine to do star gazer type printing
+prettyCoef <- function(coef, pVal) {
+  textCoef <- paste0("$",format(round(coef, 3), nsmall = 3))
+  # now pVal cases
+  if (pVal < 0.01) {
+    textCoef <- paste0(textCoef, "^{***}$")
+  } else {
+    if (pVal < 0.05) {
+      textCoef <- paste0(textCoef, "^{**}$")
+    } else {
+      if (pVal < 0.10) {
+        textCoef <- paste0(textCoef, "^{*}$")
+      } else {
+        textCoef <- paste0(textCoef, "$")
+      }
+    }
+  }
+  return(textCoef)
+}
+
+prettySE <- function(SE) {
+  return(paste0("$(", format(round(SE, 3), nsmall = 3), ")$"))
+}
+
+
+
 # First model results -----------------------------------------------------
 mod01 <- coxph(Surv(entry, exit, event) ~ log(RP_HousePrice_median_real),
   data = exposed
@@ -114,20 +223,21 @@ covLabel1 <- c(
   "Log house prices"
 )
 
-stargazer(mod01, mod02, mod03,
-  type = "text", style = "aer",
-  out = paste0(out_path, "mainRes.tex"),
+mainRes <- stargazer(mod01, mod02, mod03,
+  type = "latex", style = "aer",
   dep.var.labels = NULL,
-  column.labels = c(
-    "Basic model", "Plus HILDA covariates",
-    "Plus Economic covariates"
-  ),
   column.sep.width = "1pt",
   covariate.labels = covLabel1,
-  keep.stat = c("n", "rsq", "wald"), df = FALSE, label = "mainRes",
-  title = "Household formation models", notes.append = FALSE
+  keep.stat = c("n", "rsq", "wald"), df = FALSE, label = "main-res",
+  title = "Household Formation Models", notes.append = FALSE
 )
 
+write_lines(adj_latex_table(latex = mainRes, column_labels = c(
+  "", "Basic model", "Individual and Household Controls",
+  "Economic Controls"
+), widths = c(0.28, 0.18, 0.23, 0.18)),
+path = paste0(out_path, "main-res.tex")
+)
 
 # plot of survival function -------------------------------------------------------
 
@@ -155,14 +265,20 @@ ageAdj <- tibble(
 temp <- ageAdj$Average.age[ageAdj$Factor == 1]
 ageAdj$Change.in.age <- (ageAdj$Average.age - temp) * 12
 
+# update names for printing purposes
+names(ageAdj) <- c("{0.2}Factor Applied to Hazard Rate", "{0.2}Average Age",
+                     "{0.2}Change in Age (months)")
+
 AvgAge <- xtable(ageAdj,
-  caption = "Average ages by factors", label = "ageFactor",
-  align = "llrr", digits = c(0, 2, 1, 0)
+                 caption = "Change in Average Age", label = "ageFactor",
+                 align = "lccc", digits = c(0, 2, 1, 0)
 )
 
 print(AvgAge,
   type = "latex", file = paste0(out_path, "AvgAge.tex"),
-  include.rownames = FALSE, tabular.environment = "threeparttable"
+  include.rownames = FALSE, caption.placement = "top",
+  sanitize.colnames.function = center_col_names, 
+  booktabs = TRUE, table.placement = "htpb"
 )
 
 
@@ -179,20 +295,21 @@ mod06 <- coxph(Surv(entry, exit, event) ~ gender + sibCat2 + parOwnCat + uneRate
 
 covLabel2 <- c(covLabel1, c("Log mortgage costs", "Log rent costs"))
 
-stargazer(mod03, mod04, mod05, mod06,
-  type = "text", style = "aer",
-  out = paste0(out_path, "HC_Table.tex"),
-  column.labels = c(
-    "House prices", "Mortgage costs", "Rental costs",
-    "All housing costs"
-  ),
-  dep.var.labels = "",
+house_cost_res <- stargazer(mod03, mod04, mod05, mod06,
+  type = "latex", style = "aer",
+  dep.var.labels = NULL,
   covariate.labels = covLabel2, column.sep.width = "1pt",
-  keep.stat = c("n", "rsq", "wald"), df = FALSE, label = "HC_Table",
-  title = "Household formation by housing cost measures",
+  keep.stat = c("n", "rsq", "wald"), df = FALSE, label = "house-cost-res",
+  title = "Household Formation by Housing Cost Measures",
   notes.append = FALSE
 )
 
+write_lines(adj_latex_table(latex = house_cost_res, column_labels = c(
+  "" , "House Prices", "Mortgage Costs", "Rental Costs",
+  "All Housing Costs")
+                  , widths = c(0.24, 0.16, 0.16, 0.16, 0.16)),
+path = paste0(out_path, "house-cost-res.tex")
+)
 
 # Exits of one type -------------------------------------------------------
 
@@ -236,6 +353,20 @@ stargazer(mod05, mod5.1, mod5.2, mod5.3,
   title = "Home ownership sensitivities", notes.append = FALSE
 )
 
+exit_res <- stargazer(mod05, mod5.1, mod5.2, mod5.3,
+                      type = "latex", style = "aer",
+                      covariate.labels = c(head(covLabel1, -1), "Log Rent Costs"),
+                      column.sep.width = "1pt",
+                      keep.stat = c("n", "rsq", "wald"), df = FALSE, label = "exit_res",
+                      title = "Home Ownership Sensitivities", notes.append = FALSE
+)
+
+write_lines(adj_latex_table(latex = exit_res, column_labels = c("", 
+                "Rent Cost Model", "Exit to Rental", "Exit to Owned", "Unknowns"),
+                    widths = c(0.22, rep(0.15,4))),
+  path = paste0(out_path, "exit-res.tex")
+)
+
 
 # unobserved heterogeneity -----------------------------------------
 # this adds a random effect for all
@@ -255,6 +386,8 @@ data = exposed, ties = "efron"
 cat("the revised house price coefficient is ", mod08$coefficients[8], "\n")
 
 # shown the table of random effects - stargazer cannot be used unfortunately
+# as it does not support coxme
+
 # first get the summary of each fit
 sumMod03 <- summary(mod03)
 # and then keep what is needed (coef, SE, p-value)
@@ -278,69 +411,89 @@ sumMod08 <- tibble(
 ) %>%
   mutate(pVal = pnorm(-abs(coef), 0, SE) * 2)
 
-prettyCoef <- function(coef, pVal) {
-  textCoef <- (paste("$", format(coef, digits = 3, nsmall = 3), "$", sep = ""))
-  # now pVal cases
-  if (pVal < 0.01) {
-    textCoef <- paste(textCoef, "^***$", sep = "")
-  } else {
-    if (pVal < 0.05) {
-      textCoef <- paste(textCoef, "^**$", sep = "")
-    } else {
-      if (pVal < 0.10) {
-        textCoef <- paste(textCoef, "^*$", sep = "")
-      } else {
-        textCoef <- paste(textCoef, "$", sep = "")
-      }
-    }
-  }
-  return(textCoef)
-}
-prettySE <- function(SE) {
-  return(paste("$(", format(SE, digits = 3, nsmall = 3), ")$", sep = ""))
-}
-
-
-# now armed with this loop to generate the table
-rY <- length(covLabel1) * 2
-random <- tibble(
-  variable = rep("", rY), NoRand = rep("", rY),
-  indRE = rep("", rY), locRE = rep("", rY)
-)
-for (i in seq(1, rY / 2, 1)) {
-  rX <- 1 + (i - 1) * 2
-  # do the first line
-  random[rX, 1] <- covLabel1[i]
-  # now for columns
-  random[rX, 2] <- prettyCoef(sumMod03$coef[i], sumMod03$pVal[i])
-  random[rX, 3] <- prettyCoef(sumMod07$coef[i], sumMod07$pVal[i])
-  random[rX, 4] <- prettyCoef(sumMod08$coef[i], sumMod08$pVal[i])
-  # and SE
-  random[rX + 1, 2] <- prettySE(sumMod03$SE[i])
-  random[rX + 1, 3] <- prettySE(sumMod07$SE[i])
-  random[rX + 1, 4] <- prettySE(sumMod08$SE[i])
-}
-
-random <- xtable(random,
-  caption = "Inclusion of Random Effects",
-  label = "random", align = "llrrr"
-)
-
-print(random,
-  type = "latex", file = paste0(out_path, "random.tex"),
-  include.rownames = FALSE
-)
-
 # this uses location as a fixed effect
 mod09 <- coxph(Surv(entry, exit, event) ~ gender + sibCat2 + parOwnCat + uneRate
-  + mortgRate + log(RP_HousePrice_median_real) +
-  as.factor(hhsgcc), data = exposed, ties = "efron")
+               + mortgRate + log(RP_HousePrice_median_real) +
+                 as.factor(hhsgcc), data = exposed, ties = "efron")
+
+sumMod09 <- summary(mod09)
+# and then keep what is needed (coef, SE, p-value)
+sumMod09 <- tibble(
+  coef = sumMod09$coefficients[, 1],
+  SE = sumMod09$coefficients[, 3],
+  pVal = sumMod09$coefficients[, 5]
+)
 
 cat("Effect with a location fixed effect ", mod09$coefficients[8], "\n")
 
 cat(" Run the WALD test for impact of fixed effects. \n")
 waldtest(mod03, mod09)
 
+#---------------
+# now generate the table as a vector of character lines in Latex type
+# this could be set up as a function for reuse
+# start with header data
+effects_res <- c(
+  "\\begin{table}[htpb] \\centering",
+  "\\begin{threeparttable}",
+  "\\caption{Inclusion of Random and Fixed Effects}",
+  "\\label{effects_res}",
+  "\\tabularnewline",
+  "\\begin{tabular}{@{\\extracolsep{1pt}}lcccc}",
+  "\\toprule")
+
+# add the column headings
+column_labels <- c("", "No Random Effects", "Individual Effects",
+                  "Random Location Effects", "Fixed Location Effects")
+widths <- c(0.25, rep(0.14, 4))
+headings <- paste0("\\parbox[t]{",widths,"\\textwidth}{\\centering ", column_labels, "}")
+headings <- paste(headings, sep = "", collapse = " & ")
+headings <- paste0(headings, " \\\\")
+effects_res <- c(effects_res, headings, "\\midrule")
+
+# now add the rows
+for (i in 1:length(covLabel1)) {
+  # first add the covariates
+  effects_res <- c(effects_res, paste(c(), sep = " & "))
+  row_text <- c(covLabel1[i], 
+                prettyCoef(sumMod03$coef[i], sumMod03$pVal[i]),
+                prettyCoef(sumMod07$coef[i], sumMod07$pVal[i]),
+                prettyCoef(sumMod08$coef[i], sumMod08$pVal[i]),
+                prettyCoef(sumMod09$coef[i], sumMod09$pVal[i]))
+  row_text <- paste(row_text, sep = "", collapse = " & ")
+  row_text <- paste0(row_text, " \\\\ ")
+  effects_res <- c(effects_res, row_text)
+  
+  # then the standard deviations
+  row_text <- c("", 
+                prettySE(sumMod03$SE[i]),
+                prettySE(sumMod07$SE[i]),
+                prettySE(sumMod08$SE[i]),
+                prettySE(sumMod09$SE[i]))
+  row_text <- paste(row_text, sep = "", collapse = " & ")
+  row_text <- paste0(row_text, " \\\\ ")
+  effects_res <- c(effects_res, row_text)
+  
+  # and finally the spacing row
+  effects_res <- c(effects_res, "\\addlinespace[0.5em]")
+}
+
+# and finally close with bottom rule, end statements and notes
+effects_res <- c(effects_res,
+  "  \\bottomrule",
+  "\\end{tabular}",
+  "\\begin{tablenotes}[flushleft]",
+  "  \\item $^{***}$Significant at 1\\%; $^{**}$Significant at 5\\%; $^{*}$Significant at 10\\%.",
+  "\\end{tablenotes}",
+  "\\end{threeparttable}",
+  "\\end{table}"
+)
+
+# then write out the results
+write_lines(effects_res,
+            path = paste0(out_path, "effects-res.tex"))
+            
+# ---------------
 # set up a function to iterate through each location returning its size and
 # the house price coefficient.
 retHPCoeff <- function(hhsgccX) {
@@ -376,17 +529,22 @@ locName <- tibble(
   )
 )
 ModLoc <- full_join(ModLoc, locName, by = "Location")
-ModLoc$Location <- NULL
-ModLoc <- ModLoc[, c(5, 1, 2, 3, 4)]
+ModLoc <- ModLoc[, c(6, 2:5)]
 
-ModLoc <- xtable(ModLoc,
-  caption = "Results by location", label = "ModLoc",
+# update the names for printing
+names(ModLoc) <- c("{0.15}Location", "{0.11}Events", "{0.15}House Price Coefficient",
+                   "{0.11}Standard Error", "{0.11}P-value")
+
+loc_tex <- xtable(ModLoc,
+  caption = "Results by Location", label = "ModLoc",
   align = "llrrrr", digits = c(0, 0, 0, 3, 3, 3)
 )
 
-print(ModLoc,
+print(loc_tex,
   type = "latex", file = paste0(out_path, "ModLoc.tex"),
-  include.rownames = FALSE
+  include.rownames = FALSE, caption.placement = "top",
+  sanitize.colnames.function = center_col_names, 
+  booktabs = TRUE, table.placement = "htpb"
 )
 
 # employment status ----------------------
@@ -414,18 +572,21 @@ mod11 <- coxph(Surv(entry, exit, event) ~ gender + sibCat2 + parOwnCat
 
 covEduEmp <- c(
   "College not working", "College working", "Part time college",
-  "NILF", "No Response", "Unemployed", "Working FT", "Working PT"
+  "Neither working nor in labour force", "No Response", "Unemployed", "Working FT", "Working PT"
 )
 
-stargazer(mod03, mod11,
-  type = "text", style = "aer",
-  out = paste0(out_path, "empEdu.tex"),
-  column.labels = c("Main model", "Employment"),
-  dep.var.labels = "Employment and Leaving Home",
-  covariate.labels = c(covLabel1, covEduEmp),
-  column.sep.width = "1pt",
-  keep.stat = c("n", "rsq", "wald"), df = FALSE, label = "empEdu",
-  title = "Impact of Employment and Education Status", notes.append = FALSE
+emp_edu_res <- stargazer(mod03, mod11,
+                      type = "latex", style = "aer",
+                      covariate.labels = c(covLabel1, covEduEmp),
+                      column.sep.width = "1pt",
+                      keep.stat = c("n", "rsq", "wald"), df = FALSE, label = "empEdu",
+                      title = "Impact of Employment and Education Status", notes.append = FALSE
+)
+
+write_lines(adj_latex_table(latex = emp_edu_res, column_labels = c("", 
+                            "Main Model", "Employment and Education"),
+                            widths = c(0.24, rep(0.18, 2))),
+            path = paste0(out_path, "empEdu.tex")
 )
 
 # marital status ----------------------
