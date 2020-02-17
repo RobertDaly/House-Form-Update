@@ -16,6 +16,9 @@ out_path <- "../output/"
 # read in the exposure data
 exposed <- read_rds(paste0(out_path, "exposure-05.rds"))
 
+# neat percentage formating
+percent_1 <- label_percent(accuracy = 0.1)
+
 # this function returns a plot of the survival function
 plotFit <- function(coxFit, surv = TRUE) {
   survf <- survfit(coxFit)
@@ -596,16 +599,21 @@ mod12 <- coxph(Surv(entry, exit, event) ~ gender + sibCat2 + parOwnCat + uneRate
 data = exposed
 )
 
-covMarried <- c("Has partner", "Status not known")
+covMarried <- c("Log house prices", "Has partner", "Status not known")
 
-stargazer(mod03, mod12,
-  type = "text", style = "aer",
-  out = paste0(out_path, "married.tex"),
-  column.labels = c("Main model", "Marital Status"),
-  covariate.labels = c(covLabel1, covMarried),
+married_res <- stargazer(mod03, mod12,
+  type = "latex", style = "aer",
+  covariate.labels = covMarried,
   column.sep.width = "1pt",
+  keep = c("log", "marriedCat"),
   keep.stat = c("n", "rsq", "wald"), df = FALSE, label = "married",
-  title = "Marital Status and Leaving Home", notes.append = FALSE
+  title = "Model including Marital Status", notes.append = FALSE
+)
+
+write_lines(adj_latex_table(latex = married_res, 
+                            column_labels = c("", "Main model", "Marital Status"),
+                            widths = c(0.24, rep(0.18, 2))),
+            path = paste0(out_path, "married.tex")
 )
 
 # now relationship transitions-----------------
@@ -643,17 +651,21 @@ newExposed$event[!exitOther] <- 0
 mod15 <- coxph(Surv(entry, exit, event) ~ gender + sibCat2 + parOwnCat + uneRate
   + mortgRate + log(RP_HousePrice_median_real), data = newExposed)
 
-
-stargazer(mod03, mod13, mod14, mod15,
-  type = "text", style = "aer",
-  out = paste0(out_path, "sepMarry.tex"),
-  column.labels = c("Main model", "Single Exits", "Married Exits", "Unknowns"),
-  covariate.labels = c(covLabel1),
+sep_married <- stargazer(mod03, mod13, mod14, mod15,
+  type = "latex", style = "aer",
+  covariate.labels = c("Log house prices"),
   column.sep.width = "1pt",
+  keep = c("log"),
   keep.stat = c("n", "rsq", "wald"), df = FALSE, label = "sepMarry",
-  title = "Marital Status and Leaving Home", notes.append = FALSE
+  title = "Relationship Status and Leaving Home", notes.append = FALSE
 )
 
+write_lines(adj_latex_table(latex = sep_married, 
+                            column_labels = c("", "Main model", "Single Exits", 
+                                              "Married Exits", "Unknowns"),
+                            widths = c(0.24, rep(0.16, 4))),
+            path = paste0(out_path, "sepMarry.tex")
+)
 
 # Income measures ---------------------------------------------------------
 
@@ -661,13 +673,19 @@ mod16 <- coxph(Surv(entry, exit, event) ~ gender + sibCat2 + parOwnCat + uneRate
   + mortgRate + log(RP_HousePrice_median_real)
   + log(tifdip_real) + log(famInc_real), data = exposed)
 
-stargazer(mod03, mod16,
-  type = "text", style = "aer", out = paste0(out_path, "ResTable8.tex"),
-  column.labels = c("Main model", "Income measures"),
-  covariate.labels = covLabel1,
+income_mod <- stargazer(mod03, mod16,
+  type = "latex", style = "aer", 
+  covariate.labels = c("Log house prices", "Log own income", "Log family income"),
   column.sep.width = "1pt",
-  keep.stat = c("n", "rsq", "wald"), df = FALSE, label = "employed",
-  title = "Marital Status, Leaving Home and income", notes.append = FALSE
+  keep = c("log"),
+  keep.stat = c("n", "rsq", "wald"), df = FALSE, label = "income_mod",
+  title = "Impact of Income on Leaving Home", notes.append = FALSE
+)
+
+write_lines(adj_latex_table(latex = income_mod, 
+                            column_labels = c("", "Main model", "Income Measures"),
+                            widths = c(0.24, rep(0.20, 2))),
+            path = paste0(out_path, "income-mod.tex")
 )
 
 
@@ -755,7 +773,7 @@ fiveYearProj <- function(assInc, coeff, baseMod) {
   )
   avgAges <- tibble(
     Year = "2015", avgAge = avgAgeFac(1, baseMod),
-    HPGrow = 100 * housePrice$HPGrow[housePrice$wave == "o"]
+    HPGrow =  housePrice$HPGrow[housePrice$wave == "o"]
   )
 
   # now project this only 1 year first
@@ -790,7 +808,7 @@ fiveYearProj <- function(assInc, coeff, baseMod) {
       tibble(
         Year = as.character(2015 + Yr),
         avgAge = avgAgeFac(fac, baseMod),
-        HPGrow = 100 * assInc
+        HPGrow =  assInc
       )
     )
   }
@@ -832,22 +850,30 @@ ggsave("plotSurv.pdf",
 ProgAvgAges <- bind_rows(
   tibble(
     Year = "2013", avgAge = avgAgeFac(1, modSimulM),
-    HPGrow = 100 * housePrice$HPGrow[housePrice$wave == "m"]
+    HPGrow = housePrice$HPGrow[housePrice$wave == "m"]
   ),
   tibble(
     Year = "2014", avgAge = avgAgeFac(1, modSimulN),
-    HPGrow = 100 * housePrice$HPGrow[housePrice$wave == "n"]
+    HPGrow =  housePrice$HPGrow[housePrice$wave == "n"]
   ),
   projRes[[2]]
 )
 
+# percent format the final field
+ProgAvgAges$HPGrow <- percent_1(ProgAvgAges$HPGrow)
+
+names(ProgAvgAges) = c("{0.14}Year", "{0.18}Average Age of Leaving",
+                       "{0.18}House Price Growth")
+
 ProgAvgAges <- xtable(ProgAvgAges,
   caption = "Projected Average Age of Leaving Home",
   label = "ProgAvgAges",
-  align = "llrr", digits = c(0, 0, 1, 1)
+  align = "lccc", digits = c(0, 0, 1, 1)
 )
 
 print(ProgAvgAges,
   type = "latex", file = paste0(out_path, "ProgAvgAges.tex"),
-  include.rownames = FALSE
+  include.rownames = FALSE, caption.placement = "top",
+  sanitize.colnames.function = center_col_names, 
+  booktabs = TRUE, table.placement = "htpb"
 )

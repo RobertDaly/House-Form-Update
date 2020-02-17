@@ -336,7 +336,7 @@ Figure \ref{modSurv} shows the survival functions for the base model including t
 
  \begin{figure}[htpb]
    \caption{Modelled Survival Function}
- %  \label{modSurv}
+   \label{modSurv}
    \centering
    \includegraphics[width=0.8\textwidth]{../output/ModSurv.pdf}
  \end{figure}
@@ -396,93 +396,19 @@ The base line rate is based on those at school and, as expected, the rate of lea
 \subsection{Partnership Status}
 It is likely that moving out of home is connected with decisions on whether to get married or enter a defacto partnership. First the analysis considered the relationship status of individuals in the next period and categorised individuals as either partnered, single or unknown as shown in Table \ref{married}. Only the new covariates are shown with the elasticity with respect to house prices.
 
-% Table created by stargazer v.5.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
-% Date and time: Wed, May 02, 2018 - 17:19:46
-\begin{table}[!htbp] \centering
-  \begin{threeparttable}
-  \caption{Relationship Status and Leaving Home}
-  \label{married}
-\begin{tabular}{@{\extracolsep{1pt}}lcc}
-\toprule
- & Main model & Relationship Status \\
-\midrule
-Log house prices & $-$1.301$^{***}$ & $-$1.107$^{***}$ \\
- & (0.073) & (0.073) \\
- \addlinespace[0.5em]
-Has partner &  & 2.421$^{***}$ \\
- &  & (0.043) \\
- \addlinespace[0.5em]
-Status not known &  & 2.096$^{***}$ \\
- &  & (0.045) \\
- \addlinespace[0.5em]
-Observations & 24,722 & 24,722 \\
-R$^{2}$ & 0.020 & 0.146 \\
-Wald Test & 489$^{***}$ & 4,585$^{***}$ \\
-    \bottomrule
-  \end{tabular}
-    \begin{tablenotes}[flushleft]
-        \item $^{***}$Significant at 1\%; $^{**}$Significant at 5\%;\\ $^{*}$Significant at 10\%.
-    \end{tablenotes}
-  \end{threeparttable}
-\end{table}
+\input{../output/married.tex}
 
 Adding relationship status does not have a large impact on the elasticity with respect to house prices. However, the household formation rate is 11 times greater when partnered compared to single.
 
 To test further whether this impacts the sensitivity to house prices, a competing risk model is used. The exit events considers are ``exit and single'', ``exit and partnered'' and ``exit and unknown''. The results are shown in Table \ref{sepMarry}. As can be seen, the elasticity with respect to house prices is similar across these groups, showing that the different choices do not impact this coefficient.
 
-\begin{table}[!htbp] \centering
-\begin{threeparttable}
-  \caption{Relationship Status and Leaving Home}
-  \label{sepMarry}
-\begin{tabular}{@{\extracolsep{1pt}}lcccc}
-\toprule
- & Main model & Single Exits & Partnered Exits & Unknowns \\
-\midrule
-Log house prices & $-$1.301$^{***}$ & $-$1.256$^{***}$ & $-$1.146$^{***}$ & $-$0.958$^{***}$ \\
- & (0.073) & (0.084) & (0.101) & (0.138) \\
-\addlinespace[0.5em]
-Observations & 24,722 & 24,722 & 24,722 & 24,722 \\
-R$^{2}$ & 0.020 & 0.015 & 0.013 & 0.013 \\
-Wald Test & 488$^{***}$ & 373$^{***}$ & 329$^{***}$ & 376$^{***}$ \\
-\bottomrule
-\end{tabular}
-\begin{tablenotes}[flushleft]
-    \item $^{***}$Significant at 1\%; $^{**}$Significant at 5\%; $^{*}$Significant at 10\%.
-\end{tablenotes}
-\end{threeparttable}
-\end{table}
+\input{../output/sepMarry.tex}
 
 \subsection{Income}
 
-The impact of own and family income is also considered as shown in Table \ref{tabInc}. The study by \cite{byrne2014household} of Irish experience did not look at the effect of income (income is only used to derive rent as a proportion of income). The study by \cite{lee2013happens}  of US experience considered family income and showed that it only had a small effect. In this study, we consider own income and family income net of own income.  Both have a significant impact although the impact is small in the case of family income. An increase in family income (net of own income) of $10\%$ would reduce the rate of leaving home by only $0.8\%$ which is a similar result to the US study. For personal income, there is a larger effect which is unsurprising. A $10\%$ increase in own income would increase the rate of leaving home by $2.3\%$. Note that these results have excluded individuals or families where no income is reported. Such families would likely have different rates of leaving home.
+The impact of own and family income is also considered as shown in Table \ref{income_mod}. The study by \cite{byrne2014household} of Irish experience did not look at the effect of income (income is only used to derive rent as a proportion of income). The study by \cite{lee2013happens}  of US experience considered family income and showed that it only had a small effect. In this study, we consider own income and family income net of own income.  Both have a significant impact although the impact is small in the case of family income. An increase in family income (net of own income) of $10\%$ would reduce the rate of leaving home by only $0.8\%$ which is a similar result to the US study. For personal income, there is a larger effect which is unsurprising. A $10\%$ increase in own income would increase the rate of leaving home by $2.3\%$. Note that these results have excluded individuals or families where no income is reported. Such families would likely have different rates of leaving home.
 
-\begin{table}[!htbp] \centering
-\begin{threeparttable}
-  \caption{Impact of Income on Leaving Home}
-  \label{tabInc}
-\begin{tabular}{@{\extracolsep{1pt}}lcc}
-\toprule
-& Main model & Income measures \\
-\midrule
-Log house prices & $-$1.301$^{***}$ & $-$1.227$^{***}$ \\
- & (0.073) & (0.079) \\
- & & \\
-Log own income &  & 0.243$^{***}$ \\
- &  & (0.021) \\
- & & \\
-Log family income &  & $-$0.083$^{***}$ \\
- &  & (0.028) \\
- & & \\
-Observations & 24,722 & 19,274 \\
-R$^{2}$ & 0.020 & 0.027 \\
-Wald Test & 488$^{***}$ & 511$^{***}$ \\
-\bottomrule
-\end{tabular}
-\begin{tablenotes}[flushleft]
-    \item $^{***}$Significant at 1\%; $^{**}$Significant at 5\%; $^{*}$Significant at 10\%.
-\end{tablenotes}
-\end{threeparttable}
-\end{table}
+\input{../output/income-mod.tex}
 
 \subsection{Simulation}
 
@@ -507,27 +433,7 @@ Where $HP$ is the median house price, $-HP$ are the other variables, $\beta_{HP}
 
 The simulation is summarised using the model average age of leaving home (see Section 3 for a discussion of how this is calculated) and these are shown in Table \ref{ProgAvgAges}. A steadily increasing age of leaving home is projected if house prices continue to increase. In practice, the increase has not been so constant in the past.
 
-\begin{table}[htbp]
-\centering
-\caption{Projected Average Age of Leaving Home}
-\label{ProgAvgAges}
-\begin{tabular}{lrr}
-\toprule
-Year & Average age & House Price \\
-& of leaving & Growth \\
-\midrule
-2013 & 22.5 & 1.6\% \\
-  2014 & 22.7 & 3.4\% \\
-  2015 & 22.4 & 5.4\% \\
-  2016 & 22.7 & 5.0\% \\
-  2017 & 23.1 & 5.0\% \\
-  2018 & 23.4 & 5.0\% \\
-  2019 & 23.8 & 5.0\% \\
-  2020 & 24.1 & 5.0\% \\
-\bottomrule
-\end{tabular}
-
-\end{table}
+\input{../output/ProgAvgAges.tex}
 
 Note that the above averages differ from those shown earlier (see Table \ref{age-3-cols}) as this earlier model is based on all data and only wave variation while this model is separate for each year and uses more covariates and hence a different calculation approach.
 
