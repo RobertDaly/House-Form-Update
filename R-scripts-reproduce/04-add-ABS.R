@@ -240,7 +240,7 @@ plot(growthCompPlot)
 # Start by reading in the spreadsheet data
 ABScpiData <-
   read.xlsx(
-    xlsxFile = paste0(abs_path, "640106.xlsx"),
+    xlsxFile = paste0(abs_path, "ABS_CPI_640106.xlsx"),
     sheet = "Data1", startRow = 10, colNames = TRUE,
     rowNames = FALSE, detectDates = TRUE
   )
@@ -287,7 +287,7 @@ plot(cpiPlot)
 # Start by reading in the spreadsheet data
 RBAmortRate <-
   read.xlsx(
-    xlsxFile = paste0(abs_path, "f05hist.xlsx"),
+    xlsxFile = paste0(abs_path, "RBA_IntRates_f05hist.xlsx"),
     sheet = "Data", startRow = 11, colNames = TRUE,
     rowNames = FALSE, detectDates = TRUE
   )

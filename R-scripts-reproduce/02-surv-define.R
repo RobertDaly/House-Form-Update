@@ -54,9 +54,9 @@ combMast <- combMast %>%
   mutate(hhrhid.fNxt = lead(hhrhid.f))
 combMast <- ungroup(combMast)
 
-# remove the last wave r at this point (if a variable is needed from wave p then
+# remove wave p at this point (if a variable is needed from wave p then
 # pull it in as a lead variable)
-combMast <- combMast[combMast$wave != "r", ]
+combMast <- combMast[combMast$wave != "p", ]
 
 #----Collect parents household ids both now and later -------------------------
 # These are the variables used by the individual loop
@@ -219,7 +219,7 @@ exposed <- combMast %>% filter(!is.na(entry))
 # filter out the case with -7 as hhsgcc
 exposed <- exposed %>% filter(hhsgcc != "-7")
 
-# create an exposure indicator for documentation purposes
+# create an exposure indicated for documentation purposes
 exposed$exposure <- 1
 
 write_rds(exposed, path = paste0(out_path, "exposure-01.rds"))

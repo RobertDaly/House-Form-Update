@@ -203,7 +203,7 @@ yearFromWave <- function(x) {
 # Summary HILDA table -----------------------------------------------------
 
 # number of households in latest wave
-nrow(combMast %>% filter(wave == "r") %>% select(hhrhid) %>% distinct())
+nrow(combMast %>% filter(wave == "p") %>% select(hhrhid) %>% distinct())
 
 # add household count
 combWave <- do(
@@ -285,12 +285,12 @@ WaveAvgAge <- unlist(lapply(WaveFac, avgAgeFac, modWave))
 avgAgeWave <- tibble(wave = substr(names(WaveFac), 5, 5), modAvg = WaveAvgAge)
 
 # convert to three columns
-age_3_cols <- tibble(Year1 = yearFromWave(avgAgeWave$wave[1:6]), 
-                     Age1 = comma(avgAgeWave$modAvg[1:6], accuracy = 0.1),
-                     Year2 = yearFromWave(avgAgeWave$wave[7:12]), 
-                     Age2 = comma(avgAgeWave$modAvg[7:12], accuracy = 0.1),
-                     Year3 = c(yearFromWave(avgAgeWave$wave[13:17]), ""), 
-                     Age3 = c(comma(avgAgeWave$modAvg[13:17], accuracy = 0.1), ""))
+age_3_cols <- tibble(Year1 = yearFromWave(avgAgeWave$wave[1:5]), 
+                     Age1 = comma(avgAgeWave$modAvg[1:5], accuracy = 0.1),
+                     Year2 = yearFromWave(avgAgeWave$wave[6:10]), 
+                     Age2 = comma(avgAgeWave$modAvg[6:10], accuracy = 0.1),
+                     Year3 = yearFromWave(avgAgeWave$wave[11:15]), 
+                     Age3 = comma(avgAgeWave$modAvg[11:15], accuracy = 0.1))
 
 # now prepare for printing
 age_3_cols <- xtable(age_3_cols,

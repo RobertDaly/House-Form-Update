@@ -21,7 +21,7 @@ strip_first_char <- function(x) {
 # ------------------------------------------------------------------------------------
 read_HILDA_wave <- function(wave_id, var_to_read, var_wave) {
   # first construct the file name
-  file_name <- paste0(path_name, "Combined_", wave_id, "180c.dta")
+  file_name <- paste0(path_name, "Combined_", wave_id, "160c.dta")
 
   # now read the data into a dateframe using the standard stata function
   working_data <- read_stata(file = file_name)
@@ -95,11 +95,11 @@ read_HILDA_waves <- function(wave_ids, ...) { # the variables from this function
 # linked to combineds
 # -----------------------------------------------------------------------------
 # store the path name
-path_name <- "~/Data/HILDA/STATA 180c/"
+path_name <- "~/Data/HILDA/STATA 160c/"
 out_path <- "../output/"
 
 # a list of all the waves
-waves <- unlist(lapply(X = seq(1, 18) + 96, FUN = intToUtf8))
+waves <- unlist(lapply(X = seq(1, 16) + 96, FUN = intToUtf8))
 # waves <- "p"  # just one wave as a check
 
 # This is the variable list to read in

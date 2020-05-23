@@ -8,7 +8,6 @@
 # this script is being updated for HILDA 18.
 # All scripts are in Scripts directory
 
-tic("The whole thing")
 library(tictoc)
 
 #------------------------------------------------------------------------------
@@ -61,7 +60,7 @@ rm(list = ls())
 tic("post codes")
 cat("Map post codes to sgcc \n")
 source("05-map-postcode.R")
-toc()
+
 
 rm(list = ls())
 tic("Add RP to HILDA")
@@ -83,10 +82,8 @@ source("08-data-tables.R")
 toc()
 
 # and final models for thesis
-rm(list = ls())
 tic("models")
 cat("Final Thesis model results \n")
 source("09-models.R")
 toc()
-
-toc()
+rm(list = ls())

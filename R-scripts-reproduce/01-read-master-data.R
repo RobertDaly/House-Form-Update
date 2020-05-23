@@ -11,10 +11,10 @@ library(haven)
 # In this section, we read in the Master file and combine with existing data.
 #-------------------------------------------------------------------------------------
 # store the path name
-path_name <- "~/Data/HILDA/STATA 180c/"
+path_name <- "~/Data/HILDA/STATA 160c/"
 out_path <- "../output/"
 
-master_data <- read_stata(file = paste0(path_name, "Master_r180c.dta"))
+master_data <- read_stata(file = paste0(path_name, "Master_p160c.dta"))
 
 # take off labels etc
 master_data <- haven::zap_labels(master_data)
@@ -99,7 +99,7 @@ combined_master <- combined_master %>% mutate(Year = yearFromWave(wave))
 
 # also create a state variable
 # first create the mapping data frame
-map_state <- tibble(
+map_state <- data_frame(
   hhsgcc = c(
     -7, 11, 19,
     21, 29, 31, 39,
